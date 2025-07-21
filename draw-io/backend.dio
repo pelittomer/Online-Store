@@ -1,17 +1,14 @@
 <mxfile host="65bd71144e">
     <diagram id="lJwm-eHo2sz60tJGDey_" name="Page-1">
-        <mxGraphModel dx="1710" dy="691" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="378" dy="234" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="2" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;To Do List&lt;/h1&gt;&lt;p&gt;&lt;strike&gt;-Servislerin belirlenmesi&lt;/strike&gt;&lt;/p&gt;&lt;p&gt;&lt;strike&gt;-Database modellerinin oluşturulması&lt;/strike&gt;&lt;/p&gt;&lt;p&gt;&lt;strike style=&quot;&quot;&gt;-Gerekli endpointlerin belirlenmesi&lt;/strike&gt;&lt;/p&gt;&lt;p&gt;&lt;strike&gt;-Branchların planlaması&lt;/strike&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="30" width="240" height="190" as="geometry"/>
-                </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
     <diagram id="rhcxHyz6bZ5NraZsop_F" name="Services">
-        <mxGraphModel dx="1168" dy="735" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1794" dy="585" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -43,7 +40,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="Of2Kmumdejxvj7TEMHH0" name="Entity">
-        <mxGraphModel dx="3282" dy="1791" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="4438" dy="2270" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -242,7 +239,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="HLlkolF4gIm-R20OagDV" name="Endpoints">
-        <mxGraphModel dx="3282" dy="2891" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="3494" dy="2785" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -1183,7 +1180,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="MhEh2SwJOgEcjz8W2gBh" name="Branchs">
-        <mxGraphModel dx="2192" dy="691" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="2644" dy="585" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
