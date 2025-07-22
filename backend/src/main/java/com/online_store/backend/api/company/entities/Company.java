@@ -46,7 +46,7 @@ public class Company {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String websiteUrl;
 
     @Column(nullable = true)
