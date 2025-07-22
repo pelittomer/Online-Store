@@ -77,7 +77,7 @@ public class AuthService {
             profile.setUser(user);
         }
         userRepository.save(user);
-        
+
         log.info("User registered successfully: {}", authRequestDto.getEmail());
 
         return String.format("User %s registered successfully.", authRequestDto.getEmail());
@@ -114,7 +114,7 @@ public class AuthService {
                 .orElseThrow(
                         () -> new UserNotFoundException("User not found with email:" + authRequestDto.getEmail()));
 
-        if (user.getRole() != role) {
+        if (user.getRole() != Role.ADMIN && user.getRole() != role) {
             throw new UnauthorizedAccessException(
                     "User with email " + user.getEmail() + " does not have the required role to perform this action.");
         }
