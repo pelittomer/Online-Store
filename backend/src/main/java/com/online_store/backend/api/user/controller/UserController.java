@@ -3,11 +3,14 @@ package com.online_store.backend.api.user.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.online_store.backend.api.user.dto.response.UserResponseDto;
 import com.online_store.backend.api.user.service.UserService;
+import com.online_store.backend.common.exception.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/user")
@@ -16,9 +19,10 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public String getActiveUser(@RequestParam String param) {
-        // Business logic to retrieve active user information will be here
-        return "Active user information will be here.";
+    public ResponseEntity<ApiResponse<UserResponseDto>> getActiveUser() {
+        return ResponseEntity.ok(
+                ApiResponse.success("",
+                        userService.getActiveUser()));
     }
 
 }
