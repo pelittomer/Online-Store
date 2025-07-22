@@ -49,7 +49,8 @@ public class SecurityConfiguration {
                                                 .requestMatchers(HttpMethod.POST,
                                                                 "/api/category", // Admin creates categories
                                                                 "/api/brand", // Admin creates brands
-                                                                "/api/variation" // Admin creates variations
+                                                                "/api/variation", // Admin creates variations
+                                                                "/api/shipper"
                                                 ).hasRole("ADMIN")
 
                                                 // SELLER role required for these general requests
