@@ -30,6 +30,6 @@ public class Upload {
     private String fileType;
 
     @Lob
-    @Column(name = "file_content", nullable = false)
+    @Column(name = "file_content", nullable = false, columnDefinition = "LONGBLOB")
     private byte[] fileContent;
 }
