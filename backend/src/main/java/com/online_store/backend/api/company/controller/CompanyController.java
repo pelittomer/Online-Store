@@ -1,15 +1,27 @@
 package com.online_store.backend.api.company.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.online_store.backend.api.company.dto.request.CompanyRequestDto;
+import com.online_store.backend.api.company.dto.request.CompanyUpdateRequestDto;
+import com.online_store.backend.api.company.dto.request.CompanyUpdateStatusRequestDto;
+import com.online_store.backend.api.company.dto.response.CompanyPrivateResponseDto;
+import com.online_store.backend.api.company.dto.response.CompanyResponseDto;
 import com.online_store.backend.api.company.service.CompanyService;
+import com.online_store.backend.common.exception.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -19,48 +31,46 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @PostMapping
-    public String createCompany(@RequestBody String companyDetails) { // Likely a CompanyCreationRequest DTO
-        // This function creates a new company.
-        // 'companyDetails' will contain the necessary information for the new company.
-        return "New company created: " + companyDetails;
+    public ResponseEntity<ApiResponse<String>> createCompany(
+            @Valid @RequestPart("company") CompanyRequestDto companyRequestDto,
+            @RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok(
+                ApiResponse.success(companyService.createCompany(companyRequestDto, file)));
     }
 
     @PutMapping
-    public String updateMyCompany(@RequestBody String updatedCompanyDetails) { // Likely a CompanyUpdateDto
-        // This function updates the company information associated with the
-        // authenticated user.
-        // It's assumed the user is linked to a specific company.
-        return "User's company information updated: " + updatedCompanyDetails;
+    public ResponseEntity<ApiResponse<String>> updateMyCompany(
+            @Valid @RequestPart("company") CompanyUpdateRequestDto companyUpdateRequestDto,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        return ResponseEntity.ok(
+                ApiResponse.success(companyService.updateMyCompany(companyUpdateRequestDto, file)));
     }
 
     @GetMapping
-    public String getMyCompany() {
-        // This function retrieves the company information associated with the
-        // authenticated user.
-        // It returns details of the company the current user belongs to or manages.
-        return "User's company information will be returned here.";
+    public ResponseEntity<ApiResponse<CompanyPrivateResponseDto>> getMyCompany() {
+        return ResponseEntity.ok(
+                ApiResponse.success("",
+                        companyService.getMyCompany()));
     }
 
     @PutMapping("/{id}")
-    public String updateCompanyStatus(@PathVariable String id, @RequestBody String newStatus) { // Or a StatusUpdateDto
-        // This function updates the status of a specific company identified by its ID.
-        // 'newStatus' would indicate the new state (e.g., active, inactive, suspended).
-        return "Status of company with ID " + id + " updated to: " + newStatus;
+    public ResponseEntity<ApiResponse<String>> updateCompanyStatus(@PathVariable Long id,
+            @RequestBody CompanyUpdateStatusRequestDto companyUpdateStatusRequestDto) {
+        return ResponseEntity.ok(
+                ApiResponse.success(companyService.updateCompanyStatus(id, companyUpdateStatusRequestDto)));
     }
 
     @GetMapping("/{id}")
-    public String getCompanyById(@PathVariable String id) {
-        // This function retrieves the detailed information for a specific company by
-        // its unique ID.
-        // It provides all details associated with that particular company.
-        return "Details for company with ID " + id + " will be returned here.";
+    public ResponseEntity<ApiResponse<CompanyResponseDto>> getCompanyById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                ApiResponse.success("",
+                        companyService.getCompanyById(id)));
     }
 
     @GetMapping("/all")
-    public String listAllCompanies() {
-        // This function retrieves and lists information for all companies in the
-        // system.
-        // This endpoint might require administrative privileges.
-        return "List of all companies will be returned here.";
+    public ResponseEntity<ApiResponse<List<CompanyResponseDto>>> listAllCompanies() {
+        return ResponseEntity.ok(
+                ApiResponse.success("",
+                        companyService.listAllCompanies()));
     }
 }
