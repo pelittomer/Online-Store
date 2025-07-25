@@ -46,7 +46,7 @@ public class VariationUtilsService {
                 .build();
     }
 
-    private VariationOptionResponseDto variationOptionResponseMapper(VariationOption variationOption) {
+    public VariationOptionResponseDto variationOptionResponseMapper(VariationOption variationOption) {
         return VariationOptionResponseDto.builder()
                 .id(variationOption.getId())
                 .name(variationOption.getName())
@@ -58,4 +58,5 @@ public class VariationUtilsService {
                 .orElseThrow(() -> new EntityNotFoundException("Category with ID " + categoryId + " not found!"))
                 : null;
     }
+
 }
