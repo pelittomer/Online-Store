@@ -7,14 +7,19 @@ import com.online_store.backend.api.company.dto.request.CompanyUpdateRequestDto;
 import com.online_store.backend.api.company.dto.response.CompanyPrivateResponseDto;
 import com.online_store.backend.api.company.dto.response.CompanyResponseDto;
 import com.online_store.backend.api.company.entities.Company;
+import com.online_store.backend.api.company.repository.CompanyRepository;
 import com.online_store.backend.api.upload.entities.Upload;
 import com.online_store.backend.api.user.entities.User;
+import com.online_store.backend.common.utils.CommonUtilsService;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class CompanyUtilsService {
+    private final CommonUtilsService commonUtilsService;
+    private final CompanyRepository companyRepository;
 
     public Company createCompanyMapper(CompanyRequestDto dto, Upload upload, User currentUser) {
         return Company.builder()
@@ -82,4 +87,10 @@ public class CompanyUtilsService {
                 .build();
     }
 
+    public Company getCurrentUserCompany() {
+        User currentUser = commonUtilsService.getCurrentUser();
+        Company company = companyRepository.findByUser(currentUser)
+                .orElseThrow(() -> new EntityNotFoundException("Company not found!"));
+        return company;
+    }
 }
