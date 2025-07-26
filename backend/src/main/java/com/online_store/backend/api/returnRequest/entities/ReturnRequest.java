@@ -40,7 +40,7 @@ public class ReturnRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "return_code", nullable = false, unique = true)
+    @Column(name = "return_code", nullable = true, unique = true)
     private String returnCode;
 
     @Column(nullable = false)
@@ -65,7 +65,7 @@ public class ReturnRequest {
     @Column(name = "rejection_reason")
     private String rejectionReason;
 
-    @Column(name = "shipping_tracking_code", nullable = false)
+    @Column(name = "shipping_tracking_code", nullable = true)
     private String shippingTrackingCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
