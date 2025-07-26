@@ -41,4 +41,9 @@ public class UploadService {
         }
     }
 
+    public Upload getUploadById(Long id) {
+        return uploadRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Upload not found!"));
+    }
+
 }
