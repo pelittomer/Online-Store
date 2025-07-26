@@ -34,6 +34,7 @@ public class ProfileController {
             @Valid @RequestPart("profile") ProfileRequestDto profileRequestDto,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(
-                ApiResponse.success(profileService.updateProfileDetails(profileRequestDto, file)));
+                ApiResponse.success("",
+                        profileService.updateProfileDetails(profileRequestDto, file)));
     }
 }
