@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.online_store.backend.api.brand.utils.BrandUtilsService;
 import com.online_store.backend.api.category.utils.CategoryUtilsService;
-import com.online_store.backend.api.company.utils.CompanyUtilsService;
+import com.online_store.backend.api.company.utils.mapper.GetCompanyMapper;
 import com.online_store.backend.api.product.dto.base.DiscountDto;
 import com.online_store.backend.api.product.dto.base.FeatureDto;
 import com.online_store.backend.api.product.dto.response.CriteriaOptionResponseDto;
@@ -36,8 +36,8 @@ import lombok.RequiredArgsConstructor;
 public class GetProductDetailsMapper {
         private final BrandUtilsService brandUtilsService;
         private final ShipperUtilsService shipperUtilsService;
-        private final CompanyUtilsService companyUtilsService;
         private final CategoryUtilsService categoryUtilsService;
+        private final GetCompanyMapper getCompanyMapper;
 
         public ProductDetailsResponseDto productDetailResponseMapper(Product dto) {
                 DiscountDto discount = null;
@@ -61,7 +61,7 @@ public class GetProductDetailsMapper {
                                 .images(images)
                                 .brand(brandUtilsService.brandResponseMapper(dto.getBrand()))
                                 .shipper(shipperUtilsService.shipperResponseMapper(dto.getShipper()))
-                                .company(companyUtilsService.companyResponseMapper(dto.getCompany()))
+                                .company(getCompanyMapper.companyMapper(dto.getCompany()))
                                 .category(categoryUtilsService.mapCategoryToResponseDto(dto.getCategory()))
                                 .productDetail(productDetail)
                                 .productStocks(productStocks)
@@ -120,7 +120,7 @@ public class GetProductDetailsMapper {
 
         private CriteriaOptionResponseDto criteriaOptionsMapper(CriteriaOption dto) {
                 List<Long> images = dto.getImages().stream().map((image) -> image.getId()).toList();
-                ProductVariationOptionDto variationOption=variationOptionMapper(dto.getVariationOption());
+                ProductVariationOptionDto variationOption = variationOptionMapper(dto.getVariationOption());
                 return CriteriaOptionResponseDto.builder()
                                 .id(dto.getId())
                                 .variationOption(variationOption)

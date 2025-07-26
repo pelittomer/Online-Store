@@ -35,7 +35,8 @@ public class CompanyController {
             @Valid @RequestPart("company") CompanyRequestDto companyRequestDto,
             @RequestPart("file") MultipartFile file) {
         return ResponseEntity.ok(
-                ApiResponse.success(companyService.createCompany(companyRequestDto, file)));
+                ApiResponse.success("",
+                        companyService.createCompany(companyRequestDto, file)));
     }
 
     @PutMapping
@@ -43,7 +44,8 @@ public class CompanyController {
             @Valid @RequestPart("company") CompanyUpdateRequestDto companyUpdateRequestDto,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(
-                ApiResponse.success(companyService.updateMyCompany(companyUpdateRequestDto, file)));
+                ApiResponse.success("",
+                        companyService.updateMyCompany(companyUpdateRequestDto, file)));
     }
 
     @GetMapping
@@ -57,7 +59,8 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<String>> updateCompanyStatus(@PathVariable Long id,
             @RequestBody CompanyUpdateStatusRequestDto companyUpdateStatusRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(companyService.updateCompanyStatus(id, companyUpdateStatusRequestDto)));
+                ApiResponse.success("",
+                        companyService.updateCompanyStatus(id, companyUpdateStatusRequestDto)));
     }
 
     @GetMapping("/{id}")
