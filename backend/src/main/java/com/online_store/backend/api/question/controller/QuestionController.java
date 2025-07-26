@@ -1,5 +1,8 @@
 package com.online_store.backend.api.question.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.online_store.backend.api.question.dto.request.AnswerRequestDto;
+import com.online_store.backend.api.question.dto.request.QuestionRequestDto;
+import com.online_store.backend.api.question.dto.response.QuestionResponseDto;
 import com.online_store.backend.api.question.service.QuestionService;
+import com.online_store.backend.common.exception.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,36 +25,28 @@ import lombok.RequiredArgsConstructor;
 public class QuestionController {
     private final QuestionService questionService;
 
-    @PostMapping
-    public String createQuestion(@RequestBody String questionDetails) { // Likely a QuestionCreationDto
-        // This function allows a user to create a new question, typically about a
-        // product.
-        // 'questionDetails' would include the question text and the associated product
-        // ID.
-        return "New question created: " + questionDetails;
+    @PostMapping()
+    public ResponseEntity<ApiResponse<String>> createQuestion(@RequestBody QuestionRequestDto questionRequestDto) {
+        return ResponseEntity.ok(
+                ApiResponse.success(questionService.createQuestion(questionRequestDto)));
     }
 
     @PostMapping("/{id}")
-    public String answerQuestion(@PathVariable String id, @RequestBody String answerDetails) { // Likely an AnswerDto
-        // This function enables a seller to provide an answer to a specific question
-        // identified by its ID.
-        // 'answerDetails' would contain the answer text.
-        return "Answer for question ID " + id + " created: " + answerDetails;
+    public ResponseEntity<ApiResponse<String>> answerQuestion(@PathVariable Long id,
+            @RequestBody AnswerRequestDto answerRequestDto) {
+        return ResponseEntity.ok(
+                ApiResponse.success(questionService.answerQuestion(id, answerRequestDto)));
     }
 
     @GetMapping
-    public String listProductQuestions(@RequestParam String productId) { // Or @PathVariable if part of path
-        // This function retrieves and lists all questions related to a specific
-        // product.
-        // 'productId' is used to filter questions relevant to that product.
-        return "Questions for product ID " + productId + " will be listed here.";
+    public ResponseEntity<ApiResponse<List<QuestionResponseDto>>> listProductQuestions(@RequestParam Long productId) {
+        return ResponseEntity.ok(
+                ApiResponse.success(questionService.listProductQuestions(productId)));
     }
 
     @GetMapping("/all")
-    public String listSellerQuestions() {
-        // This function retrieves and lists all questions directed to or related to the
-        // authenticated seller.
-        // This might include questions about their products or general inquiries.
-        return "All questions relevant to the seller will be listed here.";
+    public ResponseEntity<ApiResponse<List<QuestionResponseDto>>> listSellerQuestions() {
+        return ResponseEntity.ok(
+                ApiResponse.success(questionService.listSellerQuestions()));
     }
 }
