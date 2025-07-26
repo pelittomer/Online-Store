@@ -12,6 +12,7 @@ import com.online_store.backend.api.profile.repository.ProfileRepository;
 import com.online_store.backend.api.profile.utils.ProfileUtilsService;
 import com.online_store.backend.api.upload.entities.Upload;
 import com.online_store.backend.api.upload.service.UploadService;
+import com.online_store.backend.api.user.entities.Role;
 import com.online_store.backend.api.user.entities.User;
 import com.online_store.backend.common.utils.CommonUtilsService;
 
@@ -22,9 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ProfileService {
-    private final ProfileRepository profileRepository;
-    private final ProfileUtilsService profileUtilsService;
+    // utils
     private final CommonUtilsService commonUtilsService;
+    private final ProfileUtilsService profileUtilsService;
+    // repositories
+    private final ProfileRepository profileRepository;
+    // services
     private final UploadService uploadService;
 
     /**
@@ -77,4 +81,10 @@ public class ProfileService {
         return "Profile updated successfully for user.";
     }
 
+    public Profile createProfile(Role role) {
+        if (role == Role.CUSTOMER) {
+            return Profile.builder().build();
+        }
+        return null;
+    }
 }
