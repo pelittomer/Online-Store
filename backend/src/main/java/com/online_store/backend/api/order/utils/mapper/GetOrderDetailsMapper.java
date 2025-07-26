@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.online_store.backend.api.address.dto.response.AddressResponseDto;
-import com.online_store.backend.api.address.utils.AddressUtilsService;
+import com.online_store.backend.api.address.utils.mapper.GeAddressMapper;
 import com.online_store.backend.api.order.dto.response.OrderDetailsResponseDto;
 import com.online_store.backend.api.order.dto.response.OrderItemResponseDto;
 import com.online_store.backend.api.order.entities.Order;
@@ -20,12 +20,12 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class GetOrderDetailsMapper {
-    private final AddressUtilsService addressUtilsService;
+    private final GeAddressMapper getAddressMapper;
     private final GetProductMapper getProductMapper;
     private final GetProductDetailsMapper getProductDetailsMapper;
 
     public OrderDetailsResponseDto orderDetailsMapper(Order dto) {
-        AddressResponseDto address = addressUtilsService.addressResponseMapper(dto.getAddress());
+        AddressResponseDto address = getAddressMapper.addressMapper(dto.getAddress());
         List<OrderItemResponseDto> orderItems = dto.getOrderItems().stream()
                 .map(this::orderItemMapepr).toList();
         return OrderDetailsResponseDto.builder()

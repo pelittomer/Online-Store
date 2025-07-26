@@ -27,7 +27,8 @@ public class AddressController {
     @PostMapping
     public ResponseEntity<ApiResponse<String>> addAddress(@RequestBody AddressRequestDto addressRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(addressService.addAddress(addressRequestDto)));
+                ApiResponse.success("",
+                        addressService.addAddress(addressRequestDto)));
     }
 
     @GetMapping
@@ -40,6 +41,7 @@ public class AddressController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteAddress(@PathVariable Long id) {
         return ResponseEntity.ok(
-                ApiResponse.success(addressService.deleteAddress(id)));
+                ApiResponse.success("",
+                        addressService.deleteAddress(id)));
     }
 }
