@@ -19,6 +19,12 @@ import com.online_store.backend.common.utils.CommonUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing user profiles.
+ * This service handles the business logic for creating, retrieving, and
+ * updating user profiles,
+ * including profile details and avatar images.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,12 +38,30 @@ public class ProfileService {
     private final GetProfileMapper getProfileMapper;
     private final UpdateProfileMapper updateProfileMapper;
 
+    /**
+     * Retrieves the profile details for the currently authenticated user.
+     *
+     * @return A {@link ProfileResponseDto} containing the user's profile
+     *         information.
+     * @see com.online_store.backend.api.profile.controller.ProfileController#getProfileDetails()
+     */
     public ProfileResponseDto getProfileDetails() {
         User currentUser = commonUtilsService.getCurrentUser();
         Profile profile = profileRepository.findByUser(currentUser);
         return getProfileMapper.profileMapper(profile);
     }
 
+    /**
+     * Updates the profile details for the current user.
+     * This method handles updating the user's personal information and,
+     * if provided, their profile avatar.
+     *
+     * @param dto  The DTO containing the updated profile details.
+     * @param file The new avatar image file, which can be null.
+     * @return A success message upon a successful profile update.
+     * @see com.online_store.backend.api.profile.controller.ProfileController#updateProfileDetails(ProfileRequestDto,
+     *      MultipartFile)
+     */
     @Transactional
     public String updateProfileDetails(ProfileRequestDto dto, MultipartFile file) {
         User currentUser = commonUtilsService.getCurrentUser();
@@ -52,6 +76,16 @@ public class ProfileService {
         return "Profile updated successfully for user.";
     }
 
+    /**
+     * Creates a default profile for a new user based on their role.
+     * Currently, it creates a profile for a customer with a default gender.
+     *
+     * @param role The role of the new user.
+     * @return A new {@link Profile} entity with default values, or null if the role
+     *         is not supported.
+     * @see com.online_store.backend.api.user.utils.mapper.CreateUserMapper#userMapper(com.online_store.backend.api.auth.dto.request.AuthRequestDto,
+     *      Role)
+     */
     public Profile createProfile(Role role) {
         if (role == Role.CUSTOMER) {
             return Profile.builder()
