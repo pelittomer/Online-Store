@@ -21,6 +21,10 @@ import com.online_store.backend.common.utils.CommonUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing addresses.
+ * Provides functionality for adding, listing, and deleting user addresses.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,6 +38,13 @@ public class AddressService {
     private final GeAddressMapper getAddressMapper;
     private final CreateAddressMapper createAddressMapper;
 
+    /**
+     * Adds a new address for the currently authenticated user.
+     *
+     * @param addressRequestDto The DTO containing the address details.
+     * @return A success message.
+     * @see com.online_store.backend.api.address.controller.AddressController#addAddress(AddressRequestDto)
+     */
     @Transactional
     public String addAddress(AddressRequestDto addressRequestDto) {
         User currentUser = commonUtilsService.getCurrentUser();
@@ -47,6 +58,14 @@ public class AddressService {
         return "Address created successfully.";
     }
 
+    /**
+     * Retrieves all addresses belonging to the current user.
+     * The addresses are sorted by creation date in descending order.
+     *
+     * @return A list of {@link AddressResponseDto} for the current user's
+     *         addresses.
+     * @see com.online_store.backend.api.address.controller.AddressController#listAddresses()
+     */
     @Transactional(readOnly = true)
     public List<AddressResponseDto> listAddresses() {
         User currentUser = commonUtilsService.getCurrentUser();
@@ -58,6 +77,16 @@ public class AddressService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Deletes a specific address for the current user.
+     * A user can only delete addresses that belong to them.
+     *
+     * @param id The ID of the address to delete.
+     * @return A success message.
+     * @throws AccessDeniedException if the user attempts to delete an address
+     *                               belonging to another user.
+     * @see com.online_store.backend.api.address.controller.AddressController#deleteAddress(Long)
+     */
     @Transactional
     public String deleteAddress(Long id) {
         User currentUser = commonUtilsService.getCurrentUser();
