@@ -30,6 +30,11 @@ import com.online_store.backend.api.shipper.utils.ShipperUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing products.
+ * This service handles the business logic for adding, retrieving, and listing
+ * products.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -47,6 +52,21 @@ public class ProductService {
         private final GetProductDetailsMapper getProductDetailsMapper;
         private final GetProductMapper getProductMapper;
 
+        /**
+         * Adds a new product to the system.
+         * This method validates that the current user's company is approved before
+         * creating the product.
+         * It also processes dynamic file uploads for product images and associates the
+         * product with its
+         * brand, shipper, and category.
+         *
+         * @param dto     The DTO containing the product's details.
+         * @param request The {@link MultipartHttpServletRequest} containing the
+         *                uploaded product images.
+         * @return A success message upon successful product creation.
+         * @see com.online_store.backend.api.product.controller.ProductController#addProduct(ProductRequestDto,
+         *      MultipartHttpServletRequest)
+         */
         @Transactional
         public String addProduct(ProductRequestDto dto,
                         MultipartHttpServletRequest request) {
@@ -78,6 +98,13 @@ public class ProductService {
                 return "Product created successfully.";
         }
 
+        /**
+         * Retrieves the detailed information of a specific product by its ID.
+         *
+         * @param productId The ID of the product to retrieve.
+         * @return A {@link ProductDetailsResponseDto} containing the product's details.
+         * @see com.online_store.backend.api.product.controller.ProductController#getProductById(Long)
+         */
         @Transactional(readOnly = true)
         public ProductDetailsResponseDto getProductById(Long productId) {
                 log.info("Fetching details for product with ID: {}", productId);
@@ -85,6 +112,12 @@ public class ProductService {
                 return getProductDetailsMapper.productDetailResponseMapper(product);
         }
 
+        /**
+         * Retrieves a list of all products.
+         *
+         * @return A list of {@link ProductResponseDto} for all products.
+         * @see com.online_store.backend.api.product.controller.ProductController#listProducts()
+         */
         @Transactional(readOnly = true)
         public List<ProductResponseDto> listProducts() {
                 log.info("Listing all products.");
