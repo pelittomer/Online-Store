@@ -30,12 +30,14 @@ public class ReviewController {
             @Valid @RequestPart("review") ReviewRequestDto reviewRequestDto,
             @RequestPart("images") List<MultipartFile> imageFiles) {
         return ResponseEntity.ok(
-                ApiResponse.success(reviewService.createReview(reviewRequestDto, imageFiles)));
+                ApiResponse.success("",
+                        reviewService.createReview(reviewRequestDto, imageFiles)));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ReviewResponseDto>>> listProductReviews(@RequestParam Long productId) {
         return ResponseEntity.ok(
-                ApiResponse.success(reviewService.listProductReviews(productId)));
+                ApiResponse.success("",
+                        reviewService.listProductReviews(productId)));
     }
 }
