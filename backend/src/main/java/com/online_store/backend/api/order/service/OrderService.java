@@ -24,6 +24,11 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing customer orders.
+ * This service handles the creation of new orders from a user's cart,
+ * and provides methods to list and view details of existing orders.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -39,6 +44,15 @@ public class OrderService {
     private final GetOrderMapper getOrderMapper;
     private final GetOrderDetailsMapper getOrderDetailsMapper;
 
+    /**
+     * Creates a new order for the current user based on their shopping cart.
+     * The method first validates that the cart is not empty, then creates the order
+     * and finally clears the cart.
+     *
+     * @param dto The DTO containing the address ID for the order.
+     * @return A success message upon successful order creation.
+     * @see com.online_store.backend.api.order.controller.OrderController#createOrder(OrderRequestDto)
+     */
     @Transactional
     public String createOrder(OrderRequestDto dto) {
         User user = commonUtilsService.getCurrentUser();
@@ -58,6 +72,13 @@ public class OrderService {
         return "Order created succesfully.";
     }
 
+    /**
+     * Retrieves a list of all orders for the current authenticated user.
+     *
+     * @return A list of {@link OrderResponseDto} objects, each representing an
+     *         order.
+     * @see com.online_store.backend.api.order.controller.OrderController#listUserOrders()
+     */
     public List<OrderResponseDto> listUserOrders() {
         User user = commonUtilsService.getCurrentUser();
         log.info("Listing all orders for user: {}", user.getEmail());
@@ -67,6 +88,19 @@ public class OrderService {
                 .map(getOrderMapper::orderResponseMapper).toList();
     }
 
+    /**
+     * Retrieves the detailed information for a specific order.
+     * It ensures that the order belongs to the current user for security purposes.
+     *
+     * @param id The ID of the order to retrieve.
+     * @return An {@link OrderDetailsResponseDto} containing all details of the
+     *         order.
+     * @throws EntityNotFoundException if the order with the given ID does not
+     *                                 exist.
+     * @throws Error                   if the current user is not the owner of the
+     *                                 order.
+     * @see com.online_store.backend.api.order.controller.OrderController#getOrderDetails(Long)
+     */
     public OrderDetailsResponseDto getOrderDetails(Long id) {
         User currentUser = commonUtilsService.getCurrentUser();
         log.info("Fetching order details for order ID: {} for user: {}", id, currentUser.getEmail());
