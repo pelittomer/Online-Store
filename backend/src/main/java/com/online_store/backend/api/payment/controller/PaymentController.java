@@ -21,7 +21,7 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<ApiResponse<String>> createPayment(@RequestBody PaymentRequestDto paymentRequestDto) {
         return ResponseEntity.ok(
-            ApiResponse.success(paymentService.createPayment(paymentRequestDto))
-        );
+                ApiResponse.success("",
+                        paymentService.createPayment(paymentRequestDto)));
     }
 }
