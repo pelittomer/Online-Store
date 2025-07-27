@@ -17,7 +17,6 @@ import com.online_store.backend.api.product.dto.request.ProductCriteriaRequestDt
 import com.online_store.backend.api.product.dto.request.ProductDetailRequestDto;
 import com.online_store.backend.api.product.dto.request.ProductRequestDto;
 import com.online_store.backend.api.product.dto.request.ProductStockRequestDto;
-import com.online_store.backend.api.product.dto.request.StockVariationRequestDto;
 import com.online_store.backend.api.product.entities.CriteriaOption;
 import com.online_store.backend.api.product.entities.Product;
 import com.online_store.backend.api.product.entities.ProductCriteria;
@@ -28,6 +27,7 @@ import com.online_store.backend.api.product.entities.embeddables.StockVariation;
 import com.online_store.backend.api.shipper.entities.Shipper;
 import com.online_store.backend.api.upload.entities.Upload;
 import com.online_store.backend.api.upload.service.UploadService;
+import com.online_store.backend.api.variation.dto.request.StockVariationRequestDto;
 import com.online_store.backend.api.variation.entities.Variation;
 import com.online_store.backend.api.variation.entities.VariationOption;
 import com.online_store.backend.api.variation.utils.VariationUtilsService;
