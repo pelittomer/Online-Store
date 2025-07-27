@@ -19,6 +19,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for handling authentication-related business logic.
+ * It provides methods for user registration, login, logout, and token
+ * refreshing.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,9 +33,18 @@ public class AuthService {
     private final UserUtilsService userUtilsService;
     // services
     private final UserService userService;
-    //modules
+    // modules
     private final JwtService jwtService;
 
+    /**
+     * Registers a new user with the specified role.
+     *
+     * @param dto  The DTO containing user registration information (email,
+     *             password, etc.).
+     * @param role The desired role for the new user.
+     * @return A success message indicating the user has been registered.
+     * @see com.online_store.backend.api.auth.controller.AuthController#signUp(AuthRequestDto, Role)
+     */
     @Transactional
     public String register(AuthRequestDto dto,
             Role role) {
@@ -43,6 +57,17 @@ public class AuthService {
         return String.format("User %s registered successfully.", dto.getEmail());
     }
 
+    /**
+     * Authenticates a user and generates JWT access and refresh tokens.
+     * The refresh token is stored in an HTTP-only cookie.
+     *
+     * @param dto      The DTO containing the user's login credentials.
+     * @param role     The expected role of the user.
+     * @param response The {@link HttpServletResponse} to add the refresh token
+     *                 cookie to.
+     * @return The generated JWT access token.
+     * @see com.online_store.backend.api.auth.controller.AuthController#signIn(AuthRequestDto, Role, HttpServletResponse)
+     */
     public String login(AuthRequestDto dto,
             Role role,
             HttpServletResponse response) {
@@ -62,6 +87,13 @@ public class AuthService {
         return accessToken;
     }
 
+    /**
+     * Logs out the user by clearing the refresh token cookie.
+     *
+     * @param response The {@link HttpServletResponse} to clear the cookie from.
+     * @return A success message indicating the user has been logged out.
+     * @see com.online_store.backend.api.auth.controller.AuthController#signOut(HttpServletResponse)
+     */
     public String logout(HttpServletResponse response) {
         authUtilsService.clearRefreshTokenCookie(response);
 
@@ -70,6 +102,16 @@ public class AuthService {
         return "You have successfully logged out.";
     }
 
+    /**
+     * Refreshes the JWT access token using a valid refresh token from the
+     * Authorization header.
+     *
+     * @param request  The {@link HttpServletRequest} containing the refresh token.
+     * @param response The {@link HttpServletResponse} to write the new access token
+     *                 to.
+     * @throws IOException if an error occurs during writing the response.
+     * @see com.online_store.backend.api.auth.controller.AuthController#refreshToken(HttpServletRequest, HttpServletResponse)
+     */
     public void refreshToken(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader("Authorization");
