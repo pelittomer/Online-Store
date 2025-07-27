@@ -23,6 +23,11 @@ import com.online_store.backend.common.utils.CommonUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for handling product questions and answers.
+ * This service manages the creation of new questions by users,
+ * and the answering of these questions by the product's company.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -39,6 +44,14 @@ public class QuestionService {
     private final CreateAnswerMapper createAnswerMapper;
     private final GetQuestionMapper getQuestionMapper;
 
+    /**
+     * Creates a new question for a specific product.
+     * The question is linked to the authenticated user and the product's company.
+     *
+     * @param dto The DTO containing the question text and product ID.
+     * @return A success message upon successful question creation.
+     * @see com.online_store.backend.api.question.controller.QuestionController#createQuestion(QuestionRequestDto)
+     */
     public String createQuestion(QuestionRequestDto dto) {
         User user = commonUtilsService.getCurrentUser();
         log.info("Attempting to create question for product ID: {} by user: {}", dto.getProduct(), user.getEmail());
@@ -52,6 +65,18 @@ public class QuestionService {
         return "Question created successfully.";
     }
 
+    /**
+     * Answers an existing question.
+     * This method validates that the question hasn't already been answered and that
+     * the current user's company is the owner of the product.
+     *
+     * @param id               The ID of the question to answer.
+     * @param answerRequestDto The DTO containing the answer text.
+     * @return A success message upon successful answering.
+     * @throws IllegalArgumentException if the question has already been answered or
+     *                                  the user is unauthorized.
+     * @see com.online_store.backend.api.question.controller.QuestionController#answerQuestion(Long, AnswerRequestDto)
+     */
     public String answerQuestion(Long id, AnswerRequestDto answerRequestDto) {
         Company company = companyUtilsService.getCurrentUserCompany();
         log.info("Attempting to answer question ID: {} by company: {}", id, company.getName());
@@ -74,6 +99,13 @@ public class QuestionService {
         return "Answer created successfully.";
     }
 
+    /**
+     * Retrieves a list of all questions for a specific product.
+     *
+     * @param productId The ID of the product.
+     * @return A list of {@link QuestionResponseDto} for the specified product.
+     * @see com.online_store.backend.api.question.controller.QuestionController#listProductQuestions(Long)
+     */
     public List<QuestionResponseDto> listProductQuestions(Long productId) {
         log.info("Listing questions for product with ID: {}", productId);
         Product product = productUtilsService.findProductById(productId);
@@ -83,6 +115,12 @@ public class QuestionService {
                 .toList();
     }
 
+    /**
+     * Retrieves a list of all questions directed to the current user's company.
+     *
+     * @return A list of {@link QuestionResponseDto} for the current user's company.
+     * @see com.online_store.backend.api.question.controller.QuestionController#listSellerQuestions()
+     */
     public List<QuestionResponseDto> listSellerQuestions() {
         Company company = companyUtilsService.getCurrentUserCompany();
         log.info("Listing questions for company: {}", company.getName());
