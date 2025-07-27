@@ -15,18 +15,35 @@ import com.online_store.backend.common.utils.CommonUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for handling payment processing.
+ * This service is responsible for creating and saving payment records for
+ * orders.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PaymentService {
-    //repositories
+    // repositories
     private final PaymentRepository paymentRepository;
-    //utils
+    // utils
     private final CommonUtilsService commonUtilsService;
     private final OrderUtilsService orderUtilsService;
-    //mappers
+    // mappers
     private final CreatePaymentMapper createPaymentMapper;
 
+    /**
+     * Creates a new payment for a given order.
+     * This method first verifies that the authenticated user is the owner of the
+     * order,
+     * then creates a payment entity and saves it to the database.
+     *
+     * @param dto The DTO containing the order ID and payment details.
+     * @return A success message confirming the payment has been processed.
+     * @throws AccessDeniedException if the current user is not authorized to pay
+     *                               for the specified order.
+     * @see com.online_store.backend.api.payment.controller.PaymentController#createPayment(PaymentRequestDto)
+     */
     public String createPayment(PaymentRequestDto dto) {
         User user = commonUtilsService.getCurrentUser();
         log.info("Attempting to process payment for order ID: {} by user: {}", dto.getOrder(), user.getEmail());
