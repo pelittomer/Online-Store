@@ -11,57 +11,55 @@ import com.online_store.backend.api.shipper.dto.request.ShipperRequestDto;
 import com.online_store.backend.api.shipper.dto.response.ShipperResponseDto;
 import com.online_store.backend.api.shipper.entities.Shipper;
 import com.online_store.backend.api.shipper.repository.ShipperRepository;
-import com.online_store.backend.api.shipper.utils.ShipperUtilsService;
+import com.online_store.backend.api.shipper.utils.mapper.CreateShipperMapper;
+import com.online_store.backend.api.shipper.utils.mapper.GetShipperMapper;
 import com.online_store.backend.api.upload.entities.Upload;
 import com.online_store.backend.api.upload.service.UploadService;
 import com.online_store.backend.common.exception.DuplicateResourceException;
 import com.online_store.backend.common.utils.CommonUtilsService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ShipperService {
+    // repositories
     private final ShipperRepository shipperRepository;
+    // services
     private final UploadService uploadService;
+    // utils
     private final CommonUtilsService commonUtilsService;
-    private final ShipperUtilsService shipperUtilsService;
+    // mappers
+    private final GetShipperMapper getShipperMapper;
+    private final CreateShipperMapper createShipperMapper;
 
-    /**
-     * Creates a new shipper record, handles file upload for the logo, and generates
-     * a unique API key.
-     *
-     * @param shipperRequestDto DTO containing details for the new shipper.
-     * @param file              The logo file for the shipper.
-     * @return The ShipperResponseDto of the newly created shipper.
-     * @throws DuplicateResourceException If a shipper with the same name already
-     *                                    exists.
-     */
     @Transactional
     public String createShipper(ShipperRequestDto shipperRequestDto, MultipartFile file) {
+        log.info("Attempting to create a new shipper with name: {}", shipperRequestDto.getName());
         commonUtilsService.checkImageFileType(file);
-        if (shipperRepository.findByName(shipperRequestDto.getName()).isPresent()) {
+        
+        shipperRepository.findByName(shipperRequestDto.getName()).ifPresent(shipper -> {
+            log.warn("Shipper with name '{}' already exists. Creation aborted.", shipperRequestDto.getName());
             throw new DuplicateResourceException(
                     "Shipper with name '" + shipperRequestDto.getName() + "' already exists.");
-        }
+        });
 
         Upload upload = uploadService.createFile(file);
 
-        Shipper newShipper = shipperUtilsService.shipperRequestMapper(shipperRequestDto, upload);
+        Shipper newShipper = createShipperMapper.shipperMapper(shipperRequestDto, upload);
         shipperRepository.save(newShipper);
 
+        log.info("Shipper '{}' created successfully with ID: {}", newShipper.getName(), newShipper.getId());
         return "Shipper created succesfully.";
     }
 
-    /**
-     * Retrieves all shippers from the database.
-     *
-     * @return A list of ShipperResponseDto.
-     */
     @Transactional(readOnly = true)
     public List<ShipperResponseDto> listShippers() {
+        log.info("Listing all shippers.");
         return shipperRepository.findAll().stream()
-                .map(shipperUtilsService::shipperResponseMapper)
+                .map(getShipperMapper::shipperMapper)
                 .collect(Collectors.toList());
     }
 

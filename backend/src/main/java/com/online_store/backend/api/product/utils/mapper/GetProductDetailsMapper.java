@@ -25,7 +25,7 @@ import com.online_store.backend.api.product.entities.ProductStock;
 import com.online_store.backend.api.product.entities.embeddables.Discount;
 import com.online_store.backend.api.product.entities.embeddables.Feature;
 import com.online_store.backend.api.product.entities.embeddables.StockVariation;
-import com.online_store.backend.api.shipper.utils.ShipperUtilsService;
+import com.online_store.backend.api.shipper.utils.mapper.GetShipperMapper;
 import com.online_store.backend.api.variation.entities.Variation;
 import com.online_store.backend.api.variation.entities.VariationOption;
 
@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GetProductDetailsMapper {
         private final GetBrandMapper getBrandMapper;
-        private final ShipperUtilsService shipperUtilsService;
+        private final GetShipperMapper getShipperMapper;
         private final GetCategoryMapper getCategoryMapper;
         private final GetCompanyMapper getCompanyMapper;
 
@@ -60,7 +60,7 @@ public class GetProductDetailsMapper {
                                 .isPublished(dto.getIsPublished())
                                 .images(images)
                                 .brand(getBrandMapper.brandMapper(dto.getBrand()))
-                                .shipper(shipperUtilsService.shipperResponseMapper(dto.getShipper()))
+                                .shipper(getShipperMapper.shipperMapper(dto.getShipper()))
                                 .company(getCompanyMapper.companyMapper(dto.getCompany()))
                                 .category(getCategoryMapper.mapCategoryToResponseDto(dto.getCategory()))
                                 .productDetail(productDetail)
