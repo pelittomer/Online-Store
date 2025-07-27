@@ -23,21 +23,23 @@ public class FavoriteController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<String>> addProductToFavorites(
-        @RequestBody FavoriteRequestDto favoriteRequestDto
-        ) {
+            @RequestBody FavoriteRequestDto favoriteRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(favoriteService.addProduct(favoriteRequestDto)));
+                ApiResponse.success("",
+                        favoriteService.addProduct(favoriteRequestDto)));
     }
 
     @DeleteMapping("/all")
     public ResponseEntity<ApiResponse<String>> clearAllFavorites() {
         return ResponseEntity.ok(
-                ApiResponse.success(favoriteService.clearAllFavorites()));
+                ApiResponse.success("",
+                        favoriteService.clearAllFavorites()));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<FavoriteResponseDto>> listFavoriteProducts() {
         return ResponseEntity.ok(
-                ApiResponse.success(favoriteService.listFavoriteProducts()));
+                ApiResponse.success("",
+                        favoriteService.listFavoriteProducts()));
     }
 }
