@@ -20,6 +20,10 @@ import com.online_store.backend.api.upload.service.UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing brand-related operations.
+ * Provides functionality for adding new brands and listing existing ones.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,6 +38,17 @@ public class BrandService {
     private final CreteBrandMapper createBrandMapper;
     private final GetBrandMapper getBrandMapper;
 
+    /**
+     * Adds a new brand to the system.
+     * This method validates the brand data, uploads the brand logo, and saves the
+     * new brand.
+     *
+     * @param dto  The DTO containing the brand details.
+     * @param file The logo image file for the brand.
+     * @return A success message upon successful brand creation.
+     * @see com.online_store.backend.api.brand.controller.BrandController#addBrand(BrandRequestDto,
+     *      MultipartFile)
+     */
     @Transactional
     public String addBrand(BrandRequestDto dto, MultipartFile file) {
         log.info("Attempting to add a new brand with name: '{}'", dto.getName());
@@ -47,6 +62,12 @@ public class BrandService {
         return "Brand created successfuly.";
     }
 
+    /**
+     * Retrieves a list of all brands.
+     *
+     * @return A list of {@link BrandResponseDto} objects representing all brands.
+     * @see com.online_store.backend.api.brand.controller.BrandController#listBrands()
+     */
     @Transactional(readOnly = true)
     public List<BrandResponseDto> listBrands() {
         return brandRepository.findAll().stream()
