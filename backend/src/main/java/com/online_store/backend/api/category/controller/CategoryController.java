@@ -30,24 +30,28 @@ public class CategoryController {
             @RequestPart(value = "image", required = true) MultipartFile imageFile,
             @RequestPart(value = "icon", required = true) MultipartFile iconFile) {
         return ResponseEntity.ok(
-                ApiResponse.success(categoryService.addCategory(categoryRequestDto, imageFile, iconFile)));
+                ApiResponse.success("",
+                        categoryService.addCategory(categoryRequestDto, imageFile, iconFile)));
     }
 
     @GetMapping("/leafs")
     public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> listLeafCategories() {
         return ResponseEntity.ok(
-                ApiResponse.success(categoryService.listLeafCategories()));
+                ApiResponse.success("",
+                    categoryService.listLeafCategories()));
     }
 
     @GetMapping("/roots")
     public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> listRootCategories() {
         return ResponseEntity.ok(
-                ApiResponse.success(categoryService.listRootCategories()));
+                ApiResponse.success("",
+                    categoryService.listRootCategories()));
     }
 
     @GetMapping("/tree")
     public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> getCategoryTree() {
         return ResponseEntity.ok(
-                ApiResponse.success(categoryService.getCategoryTree()));
+                ApiResponse.success("",
+                    categoryService.getCategoryTree()));
     }
 }

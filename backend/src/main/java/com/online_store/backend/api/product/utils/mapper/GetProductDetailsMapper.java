@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.online_store.backend.api.brand.utils.BrandUtilsService;
-import com.online_store.backend.api.category.utils.CategoryUtilsService;
+import com.online_store.backend.api.category.utils.mapper.GetCategoryMapper;
 import com.online_store.backend.api.company.utils.mapper.GetCompanyMapper;
 import com.online_store.backend.api.product.dto.base.DiscountDto;
 import com.online_store.backend.api.product.dto.base.FeatureDto;
@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class GetProductDetailsMapper {
         private final BrandUtilsService brandUtilsService;
         private final ShipperUtilsService shipperUtilsService;
-        private final CategoryUtilsService categoryUtilsService;
+        private final GetCategoryMapper getCategoryMapper;
         private final GetCompanyMapper getCompanyMapper;
 
         public ProductDetailsResponseDto productDetailResponseMapper(Product dto) {
@@ -62,7 +62,7 @@ public class GetProductDetailsMapper {
                                 .brand(brandUtilsService.brandResponseMapper(dto.getBrand()))
                                 .shipper(shipperUtilsService.shipperResponseMapper(dto.getShipper()))
                                 .company(getCompanyMapper.companyMapper(dto.getCompany()))
-                                .category(categoryUtilsService.mapCategoryToResponseDto(dto.getCategory()))
+                                .category(getCategoryMapper.mapCategoryToResponseDto(dto.getCategory()))
                                 .productDetail(productDetail)
                                 .productStocks(productStocks)
                                 .createdAt(dto.getCreatedAt())
