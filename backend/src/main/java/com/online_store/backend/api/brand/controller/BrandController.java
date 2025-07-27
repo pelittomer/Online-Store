@@ -29,12 +29,14 @@ public class BrandController {
             @Valid @RequestPart("brand") BrandRequestDto brandRequestDto,
             @RequestPart(value = "file") MultipartFile file) {
         return ResponseEntity.ok(
-                ApiResponse.success(brandService.addBrand(brandRequestDto, file)));
+                ApiResponse.success("",
+                        brandService.addBrand(brandRequestDto, file)));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<BrandResponseDto>>> listBrands() {
         return ResponseEntity.ok(
-                ApiResponse.success(brandService.listBrands()));
+                ApiResponse.success("",
+                        brandService.listBrands()));
     }
 }
