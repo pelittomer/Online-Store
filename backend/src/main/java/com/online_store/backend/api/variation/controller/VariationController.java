@@ -29,13 +29,15 @@ public class VariationController {
     public ResponseEntity<ApiResponse<String>> addVariation(
             @Valid @RequestBody VariationRequestDto variationRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(variationService.addVariation(variationRequestDto)));
+                ApiResponse.success("",
+                        variationService.addVariation(variationRequestDto)));
     }
 
     @GetMapping()
     public ResponseEntity<ApiResponse<List<VariationResponseDto>>> listVariations(
             @RequestParam Optional<Long> categoryId) {
         return ResponseEntity.ok(
-                ApiResponse.success(variationService.listVariations(categoryId)));
+                ApiResponse.success("",
+                        variationService.listVariations(categoryId)));
     }
 }
