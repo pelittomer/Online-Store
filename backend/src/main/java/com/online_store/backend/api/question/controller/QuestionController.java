@@ -28,25 +28,29 @@ public class QuestionController {
     @PostMapping()
     public ResponseEntity<ApiResponse<String>> createQuestion(@RequestBody QuestionRequestDto questionRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(questionService.createQuestion(questionRequestDto)));
+                ApiResponse.success("",
+                        questionService.createQuestion(questionRequestDto)));
     }
 
     @PostMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> answerQuestion(@PathVariable Long id,
             @RequestBody AnswerRequestDto answerRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(questionService.answerQuestion(id, answerRequestDto)));
+                ApiResponse.success("",
+                        questionService.answerQuestion(id, answerRequestDto)));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<QuestionResponseDto>>> listProductQuestions(@RequestParam Long productId) {
         return ResponseEntity.ok(
-                ApiResponse.success(questionService.listProductQuestions(productId)));
+                ApiResponse.success("",
+                        questionService.listProductQuestions(productId)));
     }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<QuestionResponseDto>>> listSellerQuestions() {
         return ResponseEntity.ok(
-                ApiResponse.success(questionService.listSellerQuestions()));
+                ApiResponse.success("",
+                        questionService.listSellerQuestions()));
     }
 }
