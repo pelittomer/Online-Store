@@ -15,6 +15,12 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utility service for Company-related operations.
+ * Provides helper methods for retrieving company entities, validating company
+ * data
+ * during creation and updates, and managing company logos.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -26,6 +32,19 @@ public class CompanyUtilsService {
     // services
     private final UploadService uploadService;
 
+    /**
+     * Retrieves the company associated with the currently authenticated user.
+     *
+     * @return The {@link Company} entity of the current user.
+     * @throws EntityNotFoundException if no company is found for the current user.
+     * @see com.online_store.backend.api.product.service.ProductService#addProduct(com.online_store.backend.api.product.dto.request.ProductRequestDto,
+     *      org.springframework.web.multipart.MultipartHttpServletRequest)
+     * @see com.online_store.backend.api.question.service.QuestionService#answerQuestion(Long,
+     *      com.online_store.backend.api.question.dto.request.AnswerRequestDto)
+     * @see com.online_store.backend.api.question.service.QuestionService#listSellerQuestions()
+     * @see com.online_store.backend.api.returnRequest.service.ReturnRequestService#updateReturnRequestStatus(Long,
+     *      com.online_store.backend.api.returnRequest.dto.request.UpdateReturnRequestDto)
+     */
     public Company getCurrentUserCompany() {
         User currentUser = commonUtilsService.getCurrentUser();
         Company company = companyRepository.findByUser(currentUser)
@@ -36,6 +55,16 @@ public class CompanyUtilsService {
         return company;
     }
 
+    /**
+     * Finds a company by its ID.
+     *
+     * @param id The ID of the company to find.
+     * @return The {@link Company} entity with the given ID.
+     * @throws EntityNotFoundException if no company with the specified ID is found.
+     * @see com.online_store.backend.api.company.service.CompanyService#updateCompanyStatus(Long,
+     *      com.online_store.backend.api.company.dto.request.CompanyUpdateStatusRequestDto)
+     * @see com.online_store.backend.api.company.service.CompanyService#getCompanyById(Long)
+     */
     public Company findCompanyById(Long id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> {
@@ -44,6 +73,16 @@ public class CompanyUtilsService {
                 });
     }
 
+    /**
+     * Finds a company associated with a specific user.
+     *
+     * @param user The user entity whose company is to be found.
+     * @return The {@link Company} entity of the specified user.
+     * @throws EntityNotFoundException if no company is found for the given user.
+     * @see com.online_store.backend.api.company.service.CompanyService#updateMyCompany(com.online_store.backend.api.company.dto.request.CompanyUpdateRequestDto,
+     *      MultipartFile)
+     * @see com.online_store.backend.api.company.service.CompanyService#getMyCompany()
+     */
     public Company findCompanyByUser(User user) {
         return companyRepository.findByUser(user)
                 .orElseThrow(() -> {
@@ -52,6 +91,16 @@ public class CompanyUtilsService {
                 });
     }
 
+    /**
+     * Updates a company's logo if a new file is provided.
+     * This method checks if the file is valid and then updates the associated
+     * {@link com.online_store.backend.api.upload.entities.Upload} entity.
+     *
+     * @param company The company entity to update.
+     * @param file    The new logo file, or {@code null} if no update is needed.
+     * @see com.online_store.backend.api.company.service.CompanyService#updateMyCompany(com.online_store.backend.api.company.dto.request.CompanyUpdateRequestDto,
+     *      MultipartFile)
+     */
     public void updateCompanyLogoIfPresent(Company company, MultipartFile file) {
         if (file != null && !file.isEmpty()) {
             commonUtilsService.checkImageFileType(file);
@@ -60,6 +109,19 @@ public class CompanyUtilsService {
         }
     }
 
+    /**
+     * Validates the data for creating a new company.
+     * Checks for a unique company name, tax ID, and ensures the current user
+     * doesn't already have a company.
+     *
+     * @param companyRequestDto The DTO containing company details.
+     * @param file              The logo file for the new company.
+     * @param currentUser       The currently authenticated user.
+     * @throws DuplicateResourceException if a company with the same name, tax ID,
+     *                                    or for the same user already exists.
+     * @see com.online_store.backend.api.company.service.CompanyService#createCompany(CompanyRequestDto,
+     *      MultipartFile)
+     */
     public void validateCompanyCreation(CompanyRequestDto companyRequestDto,
             MultipartFile file,
             User currentUser) {

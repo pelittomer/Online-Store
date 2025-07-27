@@ -26,6 +26,10 @@ import com.online_store.backend.common.utils.CommonUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing company-related business logic.
+ * It handles the creation, updating, and retrieval of company information.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,6 +47,17 @@ public class CompanyService {
     // services
     private final UploadService uploadService;
 
+    /**
+     * Creates a new company for the current authenticated user.
+     * This method validates the company data, handles the logo upload, and saves
+     * the new company.
+     *
+     * @param dto  The DTO containing company details.
+     * @param file The logo image file for the company.
+     * @return A success message upon successful creation.
+     * @see com.online_store.backend.api.company.controller.CompanyController#createCompany(CompanyRequestDto,
+     *      MultipartFile)
+     */
     @Transactional
     public String createCompany(CompanyRequestDto dto, MultipartFile file) {
         User currentUser = commonUtilsService.getCurrentUser();
@@ -59,6 +74,16 @@ public class CompanyService {
         return "Company created succesfully.";
     }
 
+    /**
+     * Updates the details of the company belonging to the current user.
+     * This includes updating company information and optionally the logo.
+     *
+     * @param dto  The DTO containing the updated company details.
+     * @param file The new logo file, which can be null.
+     * @return A success message upon successful update.
+     * @see com.online_store.backend.api.company.controller.CompanyController#updateMyCompany(CompanyUpdateRequestDto,
+     *      MultipartFile)
+     */
     @Transactional
     public String updateMyCompany(CompanyUpdateRequestDto dto, MultipartFile file) {
         User currentUser = commonUtilsService.getCurrentUser();
@@ -74,6 +99,13 @@ public class CompanyService {
         return "Company updated succesfully.";
     }
 
+    /**
+     * Retrieves the private details of the company belonging to the current user.
+     *
+     * @return A {@link CompanyPrivateResponseDto} containing detailed company
+     *         information.
+     * @see com.online_store.backend.api.company.controller.CompanyController#getMyCompany()
+     */
     @Transactional(readOnly = true)
     public CompanyPrivateResponseDto getMyCompany() {
         User currentUser = commonUtilsService.getCurrentUser();
@@ -85,6 +117,16 @@ public class CompanyService {
         return getCompanyDetailsMapper.companyMapper(company);
     }
 
+    /**
+     * Updates the status of a specific company.
+     * This is typically an administrative function to approve or reject a company.
+     *
+     * @param id  The ID of the company to update.
+     * @param dto The DTO containing the new status and optional rejection reason.
+     * @return A success message upon successful status update.
+     * @see com.online_store.backend.api.company.controller.CompanyController#updateCompanyStatus(Long,
+     *      CompanyUpdateStatusRequestDto)
+     */
     @Transactional
     public String updateCompanyStatus(Long id, CompanyUpdateStatusRequestDto dto) {
         log.info("Updating status for company with ID: {}", id);
@@ -99,6 +141,13 @@ public class CompanyService {
         return "Company status updated succesfully.";
     }
 
+    /**
+     * Retrieves the public details of a company by its ID.
+     *
+     * @param id The ID of the company.
+     * @return A {@link CompanyResponseDto} containing public company information.
+     * @see com.online_store.backend.api.company.controller.CompanyController#getCompanyById(Long)
+     */
     @Transactional(readOnly = true)
     public CompanyResponseDto getCompanyById(Long id) {
         log.info("Fetching public company details for ID: {}", id);
@@ -107,6 +156,12 @@ public class CompanyService {
         return getCompanyMapper.companyMapper(company);
     }
 
+    /**
+     * Retrieves a list of all companies.
+     *
+     * @return A list of {@link CompanyResponseDto} for all companies.
+     * @see com.online_store.backend.api.company.controller.CompanyController#listAllCompanies()
+     */
     @Transactional(readOnly = true)
     public List<CompanyResponseDto> listAllCompanies() {
         return companyRepository.findAll().stream()
