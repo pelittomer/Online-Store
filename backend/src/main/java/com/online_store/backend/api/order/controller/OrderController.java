@@ -27,18 +27,21 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ApiResponse<String>> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(orderService.createOrder(orderRequestDto)));
+                ApiResponse.success("",
+                        orderService.createOrder(orderRequestDto)));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<OrderResponseDto>>> listUserOrders() {
         return ResponseEntity.ok(
-                ApiResponse.success(orderService.listUserOrders()));
+                ApiResponse.success("",
+                        orderService.listUserOrders()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<OrderDetailsResponseDto>> getOrderDetails(@PathVariable Long id) {
         return ResponseEntity.ok(
-                ApiResponse.success(orderService.getOrderDetails(id)));
+                ApiResponse.success("",
+                        orderService.getOrderDetails(id)));
     }
 }

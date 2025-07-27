@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CartUtilsService {
-    //repositories
+    // repositories
     private final CartRepository cartRepository;
 
     public Cart getCartByUser(User user) {
@@ -28,5 +28,12 @@ public class CartUtilsService {
                     log.info("Cart not found for user: {}. Creating a new one.", user.getEmail());
                     return cartRepository.save(Cart.builder().user(user).build());
                 });
+    }
+
+    public void clearCartItems(Cart cart) {
+        log.info("Clearing all cart items for user: {}", cart.getUser().getEmail());
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
+        log.info("Cart for user {} cleared successfully.", cart.getUser().getEmail());
     }
 }

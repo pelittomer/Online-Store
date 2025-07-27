@@ -20,38 +20,39 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class GetOrderDetailsMapper {
-    private final GeAddressMapper getAddressMapper;
-    private final GetProductMapper getProductMapper;
-    private final GetProductDetailsMapper getProductDetailsMapper;
+        // mappers
+        private final GeAddressMapper getAddressMapper;
+        private final GetProductMapper getProductMapper;
+        private final GetProductDetailsMapper getProductDetailsMapper;
 
-    public OrderDetailsResponseDto orderDetailsMapper(Order dto) {
-        AddressResponseDto address = getAddressMapper.addressMapper(dto.getAddress());
-        List<OrderItemResponseDto> orderItems = dto.getOrderItems().stream()
-                .map(this::orderItemMapepr).toList();
-        return OrderDetailsResponseDto.builder()
-                .id(dto.getId())
-                .totalAmount(dto.getTotalAmount())
-                .status(dto.getStatus())
-                .address(address)
-                .orderItems(orderItems)
-                .createdAt(dto.getCreatedAt())
-                .updatedAt(dto.getUpdatedAt())
-                .build();
-    }
+        public OrderDetailsResponseDto orderDetailsMapper(Order dto) {
+                AddressResponseDto address = getAddressMapper.addressMapper(dto.getAddress());
+                List<OrderItemResponseDto> orderItems = dto.getOrderItems().stream()
+                                .map(this::orderItemMapepr).toList();
+                return OrderDetailsResponseDto.builder()
+                                .id(dto.getId())
+                                .totalAmount(dto.getTotalAmount())
+                                .status(dto.getStatus())
+                                .address(address)
+                                .orderItems(orderItems)
+                                .createdAt(dto.getCreatedAt())
+                                .updatedAt(dto.getUpdatedAt())
+                                .build();
+        }
 
-    private OrderItemResponseDto orderItemMapepr(OrderItem dto) {
-        ProductResponseDto product = getProductMapper.prouctMapper(dto.getProduct());
-        List<StockVariationResponseDto> stockVariations = dto.getProduct().getProductStocks().stream()
-                .flatMap(item -> item.getStockVariations().stream())
-                .map(getProductDetailsMapper::stockVariationMapper)
-                .toList();
-        return OrderItemResponseDto.builder()
-                .id(dto.getId())
-                .price(dto.getPrice())
-                .quantity(dto.getQuantity())
-                .status(dto.getOrderStatus())
-                .product(product)
-                .stockVariation(stockVariations)
-                .build();
-    }
+        private OrderItemResponseDto orderItemMapepr(OrderItem dto) {
+                ProductResponseDto product = getProductMapper.prouctMapper(dto.getProduct());
+                List<StockVariationResponseDto> stockVariations = dto.getProduct().getProductStocks().stream()
+                                .flatMap(item -> item.getStockVariations().stream())
+                                .map(getProductDetailsMapper::stockVariationMapper)
+                                .toList();
+                return OrderItemResponseDto.builder()
+                                .id(dto.getId())
+                                .price(dto.getPrice())
+                                .quantity(dto.getQuantity())
+                                .status(dto.getOrderStatus())
+                                .product(product)
+                                .stockVariation(stockVariations)
+                                .build();
+        }
 }
