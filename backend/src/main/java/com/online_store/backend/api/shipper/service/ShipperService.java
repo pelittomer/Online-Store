@@ -21,6 +21,11 @@ import com.online_store.backend.common.utils.CommonUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing shippers.
+ * This service provides methods for creating new shippers and retrieving a list
+ * of all shippers.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,11 +40,25 @@ public class ShipperService {
     private final GetShipperMapper getShipperMapper;
     private final CreateShipperMapper createShipperMapper;
 
+    /**
+     * Creates a new shipper.
+     * This method validates the uniqueness of the shipper's name,
+     * uploads the associated logo file, and then creates and saves the new shipper
+     * entity.
+     *
+     * @param shipperRequestDto The DTO containing the shipper's details.
+     * @param file              The logo file for the shipper.
+     * @return A success message upon successful creation.
+     * @throws DuplicateResourceException if a shipper with the same name already
+     *                                    exists.
+     * @see com.online_store.backend.api.shipper.controller.ShipperController#createShipper(ShipperRequestDto,
+     *      MultipartFile)
+     */
     @Transactional
     public String createShipper(ShipperRequestDto shipperRequestDto, MultipartFile file) {
         log.info("Attempting to create a new shipper with name: {}", shipperRequestDto.getName());
         commonUtilsService.checkImageFileType(file);
-        
+
         shipperRepository.findByName(shipperRequestDto.getName()).ifPresent(shipper -> {
             log.warn("Shipper with name '{}' already exists. Creation aborted.", shipperRequestDto.getName());
             throw new DuplicateResourceException(
@@ -55,6 +74,13 @@ public class ShipperService {
         return "Shipper created succesfully.";
     }
 
+    /**
+     * Retrieves a list of all shippers.
+     *
+     * @return A list of {@link ShipperResponseDto} objects representing all
+     *         shippers.
+     * @see com.online_store.backend.api.shipper.controller.ShipperController#listShippers()
+     */
     @Transactional(readOnly = true)
     public List<ShipperResponseDto> listShippers() {
         log.info("Listing all shippers.");
@@ -62,5 +88,4 @@ public class ShipperService {
                 .map(getShipperMapper::shipperMapper)
                 .collect(Collectors.toList());
     }
-
 }
