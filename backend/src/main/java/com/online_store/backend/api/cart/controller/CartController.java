@@ -27,30 +27,35 @@ public class CartController {
     @PostMapping
     public ResponseEntity<ApiResponse<String>> addProductToCart(@RequestBody CartRequestDto cartRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(cartService.addProductToCart(cartRequestDto)));
+                ApiResponse.success("",
+                        cartService.addProductToCart(cartRequestDto)));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse<String>> removeProductFromCart(@PathVariable Long id) {
         return ResponseEntity.ok(
-                ApiResponse.success(cartService.removeProductFromCart(id)));
+                ApiResponse.success("",
+                        cartService.removeProductFromCart(id)));
     }
 
     @DeleteMapping("/all")
     public ResponseEntity<ApiResponse<String>> clearAllCartItems() {
         return ResponseEntity.ok(
-                ApiResponse.success(cartService.clearAllCartItems()));
+                ApiResponse.success("",
+                        cartService.clearAllCartItems()));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<CartResponseDto>> listCartItems() {
         return ResponseEntity.ok(
-                ApiResponse.success(cartService.listCartItems()));
+                ApiResponse.success("",
+                        cartService.listCartItems()));
     }
 
     @PutMapping
     public ResponseEntity<ApiResponse<String>> updateCartItem(@RequestBody UpdateCartRequestDto cartRequestDto) {
         return ResponseEntity.ok(
-                ApiResponse.success(cartService.updateCartItem(cartRequestDto)));
+                ApiResponse.success("",
+                        cartService.updateCartItem(cartRequestDto)));
     }
 }
