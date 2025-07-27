@@ -20,19 +20,41 @@ import com.online_store.backend.common.utils.CommonUtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for handling product reviews.
+ * This service is responsible for creating new reviews and retrieving existing
+ * ones for products.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ReviewService {
-    //repositories
+    // repositories
     private final ReviewRepository reviewRepository;
-    //utils
+    // utils
     private final ProductUtilsService productUtilsService;
     private final CommonUtilsService commonUtilsService;
-    //mappers
+    // mappers
     private final CreateReviewMapper createReviewMapper;
     private final GetReviewMapper getReviewMapper;
 
+    /**
+     * Creates a new review for a product.
+     * This method first validates that the user hasn't already reviewed the
+     * product.
+     * It then creates a new review entity, attaches any provided images, and saves
+     * it.
+     *
+     * @param dto        The DTO containing the review's content, rating, and
+     *                   product ID.
+     * @param imageFiles A list of {@link MultipartFile}s for images associated with
+     *                   the review.
+     * @return A success message upon successful review creation.
+     * @throws Error if the user has already submitted a review for the specified
+     *               product.
+     * @see com.online_store.backend.api.review.controller.ReviewController#createReview(ReviewRequestDto,
+     *      List)
+     */
     @Transactional
     public String createReview(ReviewRequestDto dto,
             List<MultipartFile> imageFiles) {
@@ -54,6 +76,14 @@ public class ReviewService {
         return "Review created succesfully.";
     }
 
+    /**
+     * Retrieves all reviews for a specified product.
+     *
+     * @param productId The ID of the product.
+     * @return A list of {@link ReviewResponseDto} objects, each representing a
+     *         review.
+     * @see com.online_store.backend.api.review.controller.ReviewController#listProductReviews(Long)
+     */
     public List<ReviewResponseDto> listProductReviews(Long productId) {
         log.info("Listing reviews for product with ID: {}", productId);
 
