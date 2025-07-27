@@ -1,7 +1,5 @@
 package com.online_store.backend.api.returnRequest.utils.mapper;
 
-import java.util.Random;
-
 import org.springframework.stereotype.Component;
 
 import com.online_store.backend.api.order.entities.OrderItem;
