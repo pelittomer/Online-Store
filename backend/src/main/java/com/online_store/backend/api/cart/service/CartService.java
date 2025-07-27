@@ -24,21 +24,37 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing shopping carts.
+ * Provides functionality to add, remove, update, and list items in a user's
+ * cart.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CartService {
-        //repositories
+        // repositories
         private final CartRepository cartRepository;
         private final CartItemRepository cartItemRepository;
-        //utils
+        // utils
         private final ProductUtilsService productUtilsService;
         private final CommonUtilsService commonUtilsService;
         private final CartUtilsService cartUtilsService;
-        //mappers
+        // mappers
         private final GetCartMapper getCartMapper;
         private final CreatCartMapper creatCartMapper;
 
+        /**
+         * Adds a product to the current user's shopping cart.
+         * If the product already exists in the cart, its quantity is updated.
+         * If not, a new cart item is created.
+         *
+         * @param dto The DTO containing the product, product stock, and quantity to
+         *            add.
+         * @return A message indicating whether the product was added or the quantity
+         *         was updated.
+         * @see com.online_store.backend.api.cart.controller.CartController#addProductToCart(CartRequestDto)
+         */
         public String addProductToCart(CartRequestDto dto) {
                 log.info("Attempting to add product ID: {} to cart for current user.", dto.getProduct());
                 User user = commonUtilsService.getCurrentUser();
@@ -79,6 +95,15 @@ public class CartService {
                 }
         }
 
+        /**
+         * Removes a specific cart item from the current user's cart.
+         *
+         * @param cartItemId The ID of the cart item to remove.
+         * @return A success message.
+         * @throws EntityNotFoundException if the cart item with the given ID is not
+         *                                 found in the user's cart.
+         * @see com.online_store.backend.api.cart.controller.CartController#removeProductFromCart(Long)
+         */
         public String removeProductFromCart(Long cartItemId) {
                 log.info("Attempting to remove cart item with ID: {} from cart.", cartItemId);
                 User user = commonUtilsService.getCurrentUser();
@@ -99,6 +124,12 @@ public class CartService {
                 return "Product removed from cart successfully.";
         }
 
+        /**
+         * Retrieves the current user's shopping cart details.
+         *
+         * @return A {@link CartResponseDto} representing the user's cart and its items.
+         * @see com.online_store.backend.api.cart.controller.CartController#listCartItems()
+         */
         public CartResponseDto listCartItems() {
                 log.info("Listing cart items for current user.");
                 User user = commonUtilsService.getCurrentUser();
@@ -106,6 +137,12 @@ public class CartService {
                 return getCartMapper.cartMapper(cart);
         }
 
+        /**
+         * Clears all items from the current user's shopping cart.
+         *
+         * @return A success message.
+         * @see com.online_store.backend.api.cart.controller.CartController#clearAllCartItems()
+         */
         public String clearAllCartItems() {
                 log.info("Attempting to clear all cart items for current user.");
                 User user = commonUtilsService.getCurrentUser();
@@ -118,6 +155,14 @@ public class CartService {
                 return "Cart clear.";
         }
 
+        /**
+         * Updates the quantity of a specific item in the current user's cart.
+         *
+         * @param dto The DTO containing the cart item ID and the new quantity.
+         * @return A success message.
+         * @throws EntityNotFoundException if the cart item is not found.
+         * @see com.online_store.backend.api.cart.controller.CartController#updateCartItem(UpdateCartRequestDto)
+         */
         public String updateCartItem(UpdateCartRequestDto dto) {
                 log.info("Attempting to update cart item with ID: {} for user.", dto.getId());
                 User user = commonUtilsService.getCurrentUser();
