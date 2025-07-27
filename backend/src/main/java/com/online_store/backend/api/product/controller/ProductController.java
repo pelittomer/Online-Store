@@ -32,7 +32,8 @@ public class ProductController {
                         @Valid @RequestPart("product") ProductRequestDto productRequestDto,
                         MultipartHttpServletRequest request) {
                 return ResponseEntity.ok(
-                                ApiResponse.success(productService.addProduct(productRequestDto, request)));
+                                ApiResponse.success("",
+                                                productService.addProduct(productRequestDto, request)));
         }
 
         @PutMapping("/{id}")
@@ -40,19 +41,22 @@ public class ProductController {
                         @PathVariable("id") Long id,
                         MultipartHttpServletRequest request) {
                 return ResponseEntity.ok(
-                                ApiResponse.success("Update product."));
+                                ApiResponse.success("",
+                                                "Update product."));
         }
 
         @GetMapping
         public ResponseEntity<ApiResponse<List<ProductResponseDto>>> listProducts() {
                 return ResponseEntity.ok(
-                                ApiResponse.success(productService.listProducts()));
+                                ApiResponse.success("",
+                                                productService.listProducts()));
         }
 
         @GetMapping("/{id}")
         public ResponseEntity<ApiResponse<ProductDetailsResponseDto>> getProductById(
                         @PathVariable(required = true) Long id) {
                 return ResponseEntity.ok(
-                                ApiResponse.success(productService.getProductById(id)));
+                                ApiResponse.success("",
+                                                productService.getProductById(id)));
         }
 }

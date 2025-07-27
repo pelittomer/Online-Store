@@ -4,22 +4,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.online_store.backend.api.product.entities.Product;
+import com.online_store.backend.api.product.repository.ProductRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ProductUtilsService {
-
-        public <T> T findEntityById(Function<Long, java.util.Optional<T>> finder, Long id, String entityName) {
-                return finder.apply(id)
-                                .orElseThrow(() -> new IllegalArgumentException(entityName + " not found!"));
-        }
+        //repositories
+        private final ProductRepository productRepository;
 
         public Map<String, List<MultipartFile>> processDynamicFiles(MultipartHttpServletRequest request) {
                 Map<String, List<MultipartFile>> dynamicFiles = new HashMap<>();
@@ -40,5 +42,13 @@ public class ProductUtilsService {
                         }
                 }
                 return dynamicFiles;
+        }
+
+        public Product findProductById(Long productId) {
+                return productRepository.findById(productId)
+                                .orElseThrow(() -> {
+                                        log.warn("Product with ID {} not found.", productId);
+                                        return new EntityNotFoundException("Product not found!");
+                                });
         }
 }

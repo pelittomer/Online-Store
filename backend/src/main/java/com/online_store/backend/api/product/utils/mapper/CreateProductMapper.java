@@ -30,18 +30,15 @@ import com.online_store.backend.api.upload.entities.Upload;
 import com.online_store.backend.api.upload.service.UploadService;
 import com.online_store.backend.api.variation.entities.Variation;
 import com.online_store.backend.api.variation.entities.VariationOption;
-import com.online_store.backend.api.variation.repository.VariationOptionRepository;
-import com.online_store.backend.api.variation.repository.VariationRepository;
+import com.online_store.backend.api.variation.utils.VariationUtilsService;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class CreateProductMapper {
         private final UploadService uploadService;
-        private final VariationRepository variationRepository;
-        private final VariationOptionRepository variationOptionRepository;
+        private final VariationUtilsService variationUtilsService;
 
         public Product productMapper(ProductRequestDto dto,
                         Map<String, List<MultipartFile>> dynamicFiles,
@@ -99,8 +96,7 @@ public class CreateProductMapper {
                 Set<CriteriaOption> criteriaOptions = dto.getCriteriaOptions().stream()
                                 .map((item) -> criteriaOptionMapper(item, dynamicFiles))
                                 .collect(Collectors.toSet());
-                Variation variation = variationRepository.findById(dto.getVariation())
-                                .orElseThrow(() -> new EntityNotFoundException("Variation not found!"));
+                Variation variation = variationUtilsService.findVariationById(dto.getVariation());
                 ProductCriteria productCriteria = ProductCriteria.builder()
                                 .variation(variation)
                                 .criteriaOptions(criteriaOptions)
@@ -111,8 +107,8 @@ public class CreateProductMapper {
 
         private CriteriaOption criteriaOptionMapper(CriteriaOptionRequestDto dto,
                         Map<String, List<MultipartFile>> dynamicFiles) {
-                VariationOption variationOption = variationOptionRepository.findById(dto.getVariationOption())
-                                .orElseThrow(() -> new EntityNotFoundException("Variation option not found!"));
+                VariationOption variationOption = variationUtilsService
+                                .findVariationOptionById(dto.getVariationOption());
                 Set<Upload> images = dynamicFiles.get(dto.getVariationOption().toString()).stream()
                                 .map(uploadService::createFile).collect(Collectors.toSet());
                 return CriteriaOption.builder()
@@ -134,11 +130,9 @@ public class CreateProductMapper {
         }
 
         private StockVariation stockVariation(StockVariationRequestDto dto) {
-                Variation variation = variationRepository.findById(dto.getVariation())
-                                .orElseThrow(() -> new EntityNotFoundException("Variation not found!"));
-
-                VariationOption variationOption = variationOptionRepository.findById(dto.getVariationOption())
-                                .orElseThrow(() -> new EntityNotFoundException("Variation option not found!"));
+                Variation variation = variationUtilsService.findVariationById(dto.getVariation());
+                VariationOption variationOption = variationUtilsService
+                                .findVariationOptionById(dto.getVariationOption());
                 return StockVariation.builder()
                                 .variation(variation)
                                 .variationOption(variationOption)
