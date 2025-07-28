@@ -11,11 +11,12 @@ import com.online_store.backend.api.brand.dto.request.BrandRequestDto;
 import com.online_store.backend.api.brand.dto.response.BrandResponseDto;
 import com.online_store.backend.api.brand.entities.Brand;
 import com.online_store.backend.api.brand.repository.BrandRepository;
-import com.online_store.backend.api.brand.utils.BrandUtilsService;
 import com.online_store.backend.api.brand.utils.mapper.CreteBrandMapper;
 import com.online_store.backend.api.brand.utils.mapper.GetBrandMapper;
 import com.online_store.backend.api.upload.entities.Upload;
 import com.online_store.backend.api.upload.service.UploadService;
+import com.online_store.backend.common.exception.DuplicateResourceException;
+import com.online_store.backend.common.utils.CommonUtilsService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class BrandService {
     // services
     private final UploadService uploadService;
     // utils
-    private final BrandUtilsService brandUtilsService;
+    private final CommonUtilsService commonUtilsService;
     // mappers
     private final CreteBrandMapper createBrandMapper;
     private final GetBrandMapper getBrandMapper;
@@ -52,7 +53,7 @@ public class BrandService {
     @Transactional
     public String addBrand(BrandRequestDto dto, MultipartFile file) {
         log.info("Attempting to add a new brand with name: '{}'", dto.getName());
-        brandUtilsService.validateBrandCreation(dto, file);
+        validateBrandCreation(dto, file);
 
         Upload logo = uploadService.createFile(file);
         Brand newBrand = createBrandMapper.brandMapper(dto, logo);
@@ -75,4 +76,23 @@ public class BrandService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Validates the data for creating a new brand.
+     * It checks if a brand with the same name already exists and
+     * validates the uploaded image file type.
+     *
+     * @param dto  The DTO containing the brand details.
+     * @param file The image file for the brand.
+     * @throws DuplicateResourceException if a brand with the same name already
+     *                                    exists.
+     * @see com.online_store.backend.api.brand.service.BrandService#addBrand(BrandRequestDto,
+     *      MultipartFile)
+     */
+    private void validateBrandCreation(BrandRequestDto dto, MultipartFile file) {
+        if (brandRepository.findByName(dto.getName()).isPresent()) {
+            log.warn("Brand creation failed. Brand with name '{}' already exists.", dto.getName());
+            throw new DuplicateResourceException("Brand with this name already exists.");
+        }
+        commonUtilsService.checkImageFileType(file);
+    }
 }
