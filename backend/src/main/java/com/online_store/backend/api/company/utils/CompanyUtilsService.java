@@ -3,12 +3,9 @@ package com.online_store.backend.api.company.utils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.online_store.backend.api.company.dto.request.CompanyRequestDto;
 import com.online_store.backend.api.company.entities.Company;
 import com.online_store.backend.api.company.repository.CompanyRepository;
-import com.online_store.backend.api.upload.service.UploadService;
 import com.online_store.backend.api.user.entities.User;
-import com.online_store.backend.common.exception.DuplicateResourceException;
 import com.online_store.backend.common.utils.CommonUtilsService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -29,8 +26,6 @@ public class CompanyUtilsService {
     private final CommonUtilsService commonUtilsService;
     // repositories
     private final CompanyRepository companyRepository;
-    // services
-    private final UploadService uploadService;
 
     /**
      * Retrieves the company associated with the currently authenticated user.
@@ -89,57 +84,5 @@ public class CompanyUtilsService {
                     log.warn("Company not found for user: {}", user.getEmail());
                     return new EntityNotFoundException("Company not found for the current user.");
                 });
-    }
-
-    /**
-     * Updates a company's logo if a new file is provided.
-     * This method checks if the file is valid and then updates the associated
-     * {@link com.online_store.backend.api.upload.entities.Upload} entity.
-     *
-     * @param company The company entity to update.
-     * @param file    The new logo file, or {@code null} if no update is needed.
-     * @see com.online_store.backend.api.company.service.CompanyService#updateMyCompany(com.online_store.backend.api.company.dto.request.CompanyUpdateRequestDto,
-     *      MultipartFile)
-     */
-    public void updateCompanyLogoIfPresent(Company company, MultipartFile file) {
-        if (file != null && !file.isEmpty()) {
-            commonUtilsService.checkImageFileType(file);
-            uploadService.updateExistingUploadContent(company.getLogo(), file);
-            log.info("Company logo updated for company with ID: {}", company.getId());
-        }
-    }
-
-    /**
-     * Validates the data for creating a new company.
-     * Checks for a unique company name, tax ID, and ensures the current user
-     * doesn't already have a company.
-     *
-     * @param companyRequestDto The DTO containing company details.
-     * @param file              The logo file for the new company.
-     * @param currentUser       The currently authenticated user.
-     * @throws DuplicateResourceException if a company with the same name, tax ID,
-     *                                    or for the same user already exists.
-     * @see com.online_store.backend.api.company.service.CompanyService#createCompany(CompanyRequestDto,
-     *      MultipartFile)
-     */
-    public void validateCompanyCreation(CompanyRequestDto companyRequestDto,
-            MultipartFile file,
-            User currentUser) {
-        commonUtilsService.checkImageFileType(file);
-
-        if (companyRepository.findByUser(currentUser).isPresent()) {
-            log.warn("User '{}' attempted to create a second company.", currentUser.getEmail());
-            throw new DuplicateResourceException("You can only create one company per user account.");
-        }
-        if (companyRepository.findByName(companyRequestDto.getName()).isPresent()) {
-            log.warn("Company creation failed. Name '{}' is already in use.", companyRequestDto.getName());
-            throw new DuplicateResourceException(
-                    "Company with name '" + companyRequestDto.getName() + "' already exists.");
-        }
-        if (companyRepository.findByTaxId(companyRequestDto.getTaxId()).isPresent()) {
-            log.warn("Company creation failed. Tax ID '{}' is already in use.", companyRequestDto.getTaxId());
-            throw new DuplicateResourceException(
-                    "Company with Tax ID '" + companyRequestDto.getTaxId() + "' already exists.");
-        }
     }
 }

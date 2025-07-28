@@ -4,11 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.online_store.backend.api.auth.dto.request.AuthRequestDto;
+import com.online_store.backend.api.auth.exception.UserAlreadyExistsException;
 import com.online_store.backend.api.user.dto.response.UserResponseDto;
 import com.online_store.backend.api.user.entities.Role;
 import com.online_store.backend.api.user.entities.User;
 import com.online_store.backend.api.user.repository.UserRepository;
-import com.online_store.backend.api.user.utils.UserUtilsService;
 import com.online_store.backend.api.user.utils.mapper.CreateUserMapper;
 import com.online_store.backend.api.user.utils.mapper.GetUserMapper;
 import com.online_store.backend.common.utils.CommonUtilsService;
@@ -27,8 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
     // utils
     private final CommonUtilsService commonUtilsService;
-    // services
-    private final UserUtilsService userUtilsService;
     // repositories
     private final UserRepository userRepository;
     // mappers
@@ -65,8 +63,24 @@ public class UserService {
     @Transactional
     public void createUser(AuthRequestDto dto,
             Role role) {
-        userUtilsService.handleExistingUser(dto.getEmail());
+        handleExistingUser(dto.getEmail());
         User user = createUserMapper.userMapper(dto, role);
         userRepository.save(user);
+    }
+
+    /**
+     * Checks if a user with the given email already exists.
+     *
+     * @param email The email to check for existence.
+     * @throws UserAlreadyExistsException if a user with the specified email is
+     *                                    found.
+     * @see com.online_store.backend.api.user.service.UserService#createUser(com.online_store.backend.api.auth.dto.request.AuthRequestDto,
+     *      com.online_store.backend.api.user.entities.Role)
+     */
+    public void handleExistingUser(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            log.warn("Registration attempt for existing email: {}", email);
+            throw new UserAlreadyExistsException("User with email " + email + " already exists.");
+        }
     }
 }

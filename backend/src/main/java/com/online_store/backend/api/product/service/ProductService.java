@@ -1,5 +1,7 @@
 package com.online_store.backend.api.product.service;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +84,7 @@ public class ProductService {
                 Shipper shipper = shipperUtilsService.findShipperById(dto.getShipper());
                 Category category = categoryUtilsService.findCategoryById(dto.getCategory());
 
-                Map<String, List<MultipartFile>> dynamicFiles = productUtilsService.processDynamicFiles(request);
+                Map<String, List<MultipartFile>> dynamicFiles = processDynamicFiles(request);
 
                 Product product = createProductMapper.productMapper(
                                 dto,
@@ -123,5 +125,38 @@ public class ProductService {
                 log.info("Listing all products.");
                 List<Product> products = productRepository.findAll();
                 return products.stream().map(getProductMapper::prouctMapper).toList();
+        }
+
+        /**
+         * Processes dynamic multipart files from a request.
+         * It iterates through all file names in the request and collects the
+         * corresponding
+         * non-empty files into a map.
+         *
+         * @param request The {@link MultipartHttpServletRequest} containing the files.
+         * @return A map where the key is the file name and the value is a list of
+         *         {@link MultipartFile}s.
+         * @see com.online_store.backend.api.product.service.ProductService#addProduct(com.online_store.backend.api.product.dto.request.ProductRequestDto,
+         *      MultipartHttpServletRequest)
+         */
+        private Map<String, List<MultipartFile>> processDynamicFiles(MultipartHttpServletRequest request) {
+                Map<String, List<MultipartFile>> dynamicFiles = new HashMap<>();
+                Iterator<String> fileNames = request.getFileNames();
+
+                while (fileNames.hasNext()) {
+                        String fileName = fileNames.next();
+                        List<MultipartFile> filesForThisKey = request.getFiles(fileName);
+
+                        if (filesForThisKey != null && !filesForThisKey.isEmpty()) {
+                                List<MultipartFile> actualFiles = filesForThisKey.stream()
+                                                .filter(f -> !f.isEmpty())
+                                                .toList();
+
+                                if (!actualFiles.isEmpty()) {
+                                        dynamicFiles.put(fileName, actualFiles);
+                                }
+                        }
+                }
+                return dynamicFiles;
         }
 }
