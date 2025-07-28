@@ -18,28 +18,54 @@ import com.online_store.backend.common.exception.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST controller for managing user addresses.
+ * Provides endpoints for adding, listing, and deleting addresses.
+ */
 @RestController
 @RequestMapping("/api/address")
 @RequiredArgsConstructor
 public class AddressController {
-    private final AddressService addressService;
+        private final AddressService addressService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<String>> addAddress(@RequestBody AddressRequestDto addressRequestDto) {
-        return ResponseEntity.ok(
-                ApiResponse.success(addressService.addAddress(addressRequestDto)));
-    }
+        /**
+         * Endpoint to add a new address for the authenticated user.
+         *
+         * @param addressRequestDto The DTO containing the address details.
+         * @return A {@link ResponseEntity} with an {@link ApiResponse} containing a
+         *         success message.
+         */
+        @PostMapping
+        public ResponseEntity<ApiResponse<String>> addAddress(@RequestBody AddressRequestDto addressRequestDto) {
+                return ResponseEntity.ok(
+                                ApiResponse.success("",
+                                                addressService.addAddress(addressRequestDto)));
+        }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<AddressResponseDto>>> listAddresses() {
-        return ResponseEntity.ok(
-                ApiResponse.success("",
-                        addressService.listAddresses()));
-    }
+        /**
+         * Endpoint to retrieve all addresses belonging to the authenticated user.
+         *
+         * @return A {@link ResponseEntity} with an {@link ApiResponse} containing a
+         *         list of {@link AddressResponseDto}.
+         */
+        @GetMapping
+        public ResponseEntity<ApiResponse<List<AddressResponseDto>>> listAddresses() {
+                return ResponseEntity.ok(
+                                ApiResponse.success("",
+                                                addressService.listAddresses()));
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteAddress(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                ApiResponse.success(addressService.deleteAddress(id)));
-    }
+        /**
+         * Endpoint to delete a specific address for the authenticated user.
+         *
+         * @param id The ID of the address to delete.
+         * @return A {@link ResponseEntity} with an {@link ApiResponse} containing a
+         *         success message.
+         */
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ApiResponse<String>> deleteAddress(@PathVariable Long id) {
+                return ResponseEntity.ok(
+                                ApiResponse.success("",
+                                                addressService.deleteAddress(id)));
+        }
 }

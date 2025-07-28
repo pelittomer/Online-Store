@@ -19,23 +19,51 @@ import com.online_store.backend.common.exception.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST controller for managing product variations.
+ * This controller provides endpoints for creating new variations and
+ * for retrieving a list of existing variations, optionally filtered by
+ * category.
+ */
 @RestController
 @RequestMapping("/api/variation")
 @RequiredArgsConstructor
 public class VariationController {
-    private final VariationService variationService;
+        private final VariationService variationService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<String>> addVariation(
-            @Valid @RequestBody VariationRequestDto variationRequestDto) {
-        return ResponseEntity.ok(
-                ApiResponse.success(variationService.addVariation(variationRequestDto)));
-    }
+        /**
+         * Endpoint to add a new variation.
+         * This variation can be a global variation or specific to a category.
+         *
+         * @param variationRequestDto The DTO containing the variation's details.
+         * @return A {@link ResponseEntity} with an {@link ApiResponse} containing a
+         *         success message.
+         */
+        @PostMapping
+        public ResponseEntity<ApiResponse<String>> addVariation(
+                        @Valid @RequestBody VariationRequestDto variationRequestDto) {
+                return ResponseEntity.ok(
+                                ApiResponse.success("",
+                                                variationService.addVariation(variationRequestDto)));
+        }
 
-    @GetMapping()
-    public ResponseEntity<ApiResponse<List<VariationResponseDto>>> listVariations(
-            @RequestParam Optional<Long> categoryId) {
-        return ResponseEntity.ok(
-                ApiResponse.success(variationService.listVariations(categoryId)));
-    }
+        /**
+         * Endpoint to get a list of variations.
+         * The list can be filtered by providing an optional category ID. If no category
+         * ID is provided,
+         * it will return a list of all global variations. If a category ID is provided,
+         * it will return
+         * both the global variations and the variations specific to that category.
+         *
+         * @param categoryId An optional ID of a category to filter the variations.
+         * @return A {@link ResponseEntity} with an {@link ApiResponse} containing a
+         *         list of {@link VariationResponseDto}.
+         */
+        @GetMapping()
+        public ResponseEntity<ApiResponse<List<VariationResponseDto>>> listVariations(
+                        @RequestParam Optional<Long> categoryId) {
+                return ResponseEntity.ok(
+                                ApiResponse.success("",
+                                                variationService.listVariations(categoryId)));
+        }
 }

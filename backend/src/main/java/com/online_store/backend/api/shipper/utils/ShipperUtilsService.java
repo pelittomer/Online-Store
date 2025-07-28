@@ -4,64 +4,33 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.online_store.backend.api.shipper.dto.request.ShipperRequestDto;
-import com.online_store.backend.api.shipper.dto.response.ShipperResponseDto;
 import com.online_store.backend.api.shipper.entities.Shipper;
 import com.online_store.backend.api.shipper.repository.ShipperRepository;
-import com.online_store.backend.api.upload.entities.Upload;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utility service for Shipper-related operations.
+ * This component provides helper methods for generating unique API keys
+ * and retrieving shipper entities with consistent error handling and logging.
+ */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ShipperUtilsService {
+    // repositories
     private final ShipperRepository shipperRepository;
 
     /**
-     * Maps a ShipperRequestDto and an Upload entity to a Shipper entity.
-     * Also generates a unique API key for the shipper.
+     * Generates a unique API key for a new shipper.
+     * It creates a UUID, removes hyphens, and ensures the generated key
+     * does not already exist in the database.
      *
-     * @param dto    The ShipperRequestDto containing shipper details.
-     * @param upload The Upload entity for the shipper's logo.
-     * @return A new Shipper entity.
-     */
-    public Shipper shipperRequestMapper(ShipperRequestDto dto, Upload upload) {
-        return Shipper.builder()
-                .name(dto.getName())
-                .logo(upload)
-                .websiteUrl(dto.getWebsiteUrl())
-                .phone(dto.getPhone())
-                .email(dto.getEmail())
-                .address(dto.getAddress())
-                .apiKey(this.generateUniqueApiKey())
-                .build();
-    }
-
-    /**
-     * Maps a Shipper entity to a ShipperResponseDto.
-     *
-     * @param shipper The Shipper entity.
-     * @return A ShipperResponseDto.
-     */
-    public ShipperResponseDto shipperResponseMapper(Shipper shipper) {
-        return ShipperResponseDto.builder()
-                .id(shipper.getId())
-                .name(shipper.getName())
-                .logo(shipper.getLogo().getId())
-                .websiteUrl(shipper.getWebsiteUrl())
-                .phone(shipper.getPhone())
-                .email(shipper.getEmail())
-                .address(shipper.getAddress())
-                .isActive(shipper.isActive())
-                .createdAt(shipper.getCreatedAt())
-                .build();
-    }
-
-    /**
-     * Generates a unique API key (UUID without hyphens) and ensures its uniqueness
-     * in the database.
-     *
-     * @return A unique API key string.
+     * @return A unique API key as a {@link String}.
+     * @see com.online_store.backend.api.shipper.utils.mapper.CreateShipperMapper#shipperMapper(com.online_store.backend.api.shipper.dto.request.ShipperRequestDto,
+     *      com.online_store.backend.api.upload.entities.Upload)
      */
     public String generateUniqueApiKey() {
         String apiKey;
@@ -69,5 +38,22 @@ public class ShipperUtilsService {
             apiKey = UUID.randomUUID().toString().replace("-", "");
         } while (shipperRepository.findByApiKey(apiKey).isPresent());
         return apiKey;
+    }
+
+    /**
+     * Finds a shipper by their unique identifier.
+     *
+     * @param shipperId The ID of the shipper to be retrieved.
+     * @return The {@link Shipper} entity corresponding to the provided ID.
+     * @throws EntityNotFoundException if no shipper with the given ID exists.
+     * @see com.online_store.backend.api.product.service.ProductService#addProduct(com.online_store.backend.api.product.dto.request.ProductRequestDto,
+     *      org.springframework.web.multipart.MultipartHttpServletRequest)
+     */
+    public Shipper findShipperById(Long shipperId) {
+        return shipperRepository.findById(shipperId)
+                .orElseThrow(() -> {
+                    log.warn("Shipper with ID {} not found.", shipperId);
+                    return new EntityNotFoundException("Shipper not found!");
+                });
     }
 }

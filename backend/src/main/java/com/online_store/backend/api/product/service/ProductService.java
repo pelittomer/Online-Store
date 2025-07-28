@@ -9,9 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.online_store.backend.api.brand.entities.Brand;
-import com.online_store.backend.api.brand.repository.BrandRepository;
+import com.online_store.backend.api.brand.utils.BrandUtilsService;
 import com.online_store.backend.api.category.entities.Category;
-import com.online_store.backend.api.category.repository.CategoryRepository;
+import com.online_store.backend.api.category.utils.CategoryUtilsService;
 import com.online_store.backend.api.company.entities.Company;
 import com.online_store.backend.api.company.entities.CompanyStatus;
 import com.online_store.backend.api.company.utils.CompanyUtilsService;
@@ -25,46 +25,67 @@ import com.online_store.backend.api.product.utils.mapper.CreateProductMapper;
 import com.online_store.backend.api.product.utils.mapper.GetProductDetailsMapper;
 import com.online_store.backend.api.product.utils.mapper.GetProductMapper;
 import com.online_store.backend.api.shipper.entities.Shipper;
-import com.online_store.backend.api.shipper.repository.ShipperRepository;
-
-import jakarta.persistence.EntityNotFoundException;
+import com.online_store.backend.api.shipper.utils.ShipperUtilsService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing products.
+ * This service handles the business logic for adding, retrieving, and listing
+ * products.
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
+        // repositories
         private final ProductRepository productRepository;
+        // utils
         private final ProductUtilsService productUtilsService;
+        private final CompanyUtilsService companyUtilsService;
+        private final BrandUtilsService brandUtilsService;
+        private final ShipperUtilsService shipperUtilsService;
+        private final CategoryUtilsService categoryUtilsService;
+        // mappers
         private final CreateProductMapper createProductMapper;
         private final GetProductDetailsMapper getProductDetailsMapper;
         private final GetProductMapper getProductMapper;
-        private final CompanyUtilsService companyUtilsService;
-        private final BrandRepository brandRepository;
-        private final ShipperRepository shipperRepository;
-        private final CategoryRepository categoryRepository;
 
+        /**
+         * Adds a new product to the system.
+         * This method validates that the current user's company is approved before
+         * creating the product.
+         * It also processes dynamic file uploads for product images and associates the
+         * product with its
+         * brand, shipper, and category.
+         *
+         * @param dto     The DTO containing the product's details.
+         * @param request The {@link MultipartHttpServletRequest} containing the
+         *                uploaded product images.
+         * @return A success message upon successful product creation.
+         * @see com.online_store.backend.api.product.controller.ProductController#addProduct(ProductRequestDto,
+         *      MultipartHttpServletRequest)
+         */
         @Transactional
-        public String addProduct(ProductRequestDto productRequestDto,
+        public String addProduct(ProductRequestDto dto,
                         MultipartHttpServletRequest request) {
+                log.info("Adding new product for company.");
+
                 Company company = companyUtilsService.getCurrentUserCompany();
                 if (company.getStatus() != CompanyStatus.APPROVED) {
-                        throw new Error("Your company not approved!");
+                        log.warn("Attempt to add product by a non-approved company: {}", company.getName());
+                        throw new Error("Your company is not approved. Products can't be added.");
                 }
-                Brand brand = productUtilsService.findEntityById(brandRepository::findById,
-                                productRequestDto.getBrand(),
-                                "Brand");
-                Shipper shipper = productUtilsService.findEntityById(shipperRepository::findById,
-                                productRequestDto.getShipper(),
-                                "Shipper");
-                Category category = productUtilsService.findEntityById(categoryRepository::findById,
-                                productRequestDto.getCategory(),
-                                "Category");
+
+                Brand brand = brandUtilsService.findBrandById(dto.getBrand());
+                Shipper shipper = shipperUtilsService.findShipperById(dto.getShipper());
+                Category category = categoryUtilsService.findCategoryById(dto.getCategory());
 
                 Map<String, List<MultipartFile>> dynamicFiles = productUtilsService.processDynamicFiles(request);
 
                 Product product = createProductMapper.productMapper(
-                                productRequestDto,
+                                dto,
                                 dynamicFiles,
                                 company,
                                 shipper,
@@ -73,19 +94,34 @@ public class ProductService {
 
                 productRepository.save(product);
 
+                log.info("Product '{}' successfully added by company '{}'.", product.getName(), company.getName());
                 return "Product created successfully.";
         }
 
+        /**
+         * Retrieves the detailed information of a specific product by its ID.
+         *
+         * @param productId The ID of the product to retrieve.
+         * @return A {@link ProductDetailsResponseDto} containing the product's details.
+         * @see com.online_store.backend.api.product.controller.ProductController#getProductById(Long)
+         */
         @Transactional(readOnly = true)
         public ProductDetailsResponseDto getProductById(Long productId) {
-                Product product = productRepository.findById(productId)
-                                .orElseThrow(() -> new EntityNotFoundException("Product not found!"));
+                log.info("Fetching details for product with ID: {}", productId);
+                Product product = productUtilsService.findProductById(productId);
                 return getProductDetailsMapper.productDetailResponseMapper(product);
         }
 
+        /**
+         * Retrieves a list of all products.
+         *
+         * @return A list of {@link ProductResponseDto} for all products.
+         * @see com.online_store.backend.api.product.controller.ProductController#listProducts()
+         */
+        @Transactional(readOnly = true)
         public List<ProductResponseDto> listProducts() {
+                log.info("Listing all products.");
                 List<Product> products = productRepository.findAll();
-
                 return products.stream().map(getProductMapper::prouctMapper).toList();
         }
 }

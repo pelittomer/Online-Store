@@ -28,7 +28,6 @@ public class CreatePaymentMapper {
                 .paymentDetails(paymentDetails)
                 .paymentStatus(PaymentStatus.PENDING)
                 .amount(orderDto.getTotalAmount())
-                .currency("TRY")
                 .order(orderDto)
                 .paymentDate(LocalDateTime.now())
                 .build();

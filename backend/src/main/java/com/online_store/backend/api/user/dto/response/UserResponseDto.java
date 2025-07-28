@@ -15,12 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserResponseDto {
     private Long id;
-
     private String email;
-
     private Role role;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 }

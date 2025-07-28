@@ -4,72 +4,71 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.online_store.backend.api.auth.exception.UserNotFoundException;
 import com.online_store.backend.api.profile.dto.request.ProfileRequestDto;
 import com.online_store.backend.api.profile.dto.response.ProfileResponseDto;
+import com.online_store.backend.api.profile.entities.Gender;
 import com.online_store.backend.api.profile.entities.Profile;
 import com.online_store.backend.api.profile.repository.ProfileRepository;
 import com.online_store.backend.api.profile.utils.ProfileUtilsService;
-import com.online_store.backend.api.upload.entities.Upload;
-import com.online_store.backend.api.upload.service.UploadService;
+import com.online_store.backend.api.profile.utils.mapper.GetProfileMapper;
+import com.online_store.backend.api.profile.utils.mapper.UpdateProfileMapper;
+import com.online_store.backend.api.user.entities.Role;
 import com.online_store.backend.api.user.entities.User;
 import com.online_store.backend.common.utils.CommonUtilsService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class for managing user profiles.
+ * This service handles the business logic for creating, retrieving, and
+ * updating user profiles,
+ * including profile details and avatar images.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProfileService {
-    private final ProfileRepository profileRepository;
-    private final ProfileUtilsService profileUtilsService;
+    // utils
     private final CommonUtilsService commonUtilsService;
-    private final UploadService uploadService;
+    private final ProfileUtilsService profileUtilsService;
+    // repositories
+    private final ProfileRepository profileRepository;
+    // mappers
+    private final GetProfileMapper getProfileMapper;
+    private final UpdateProfileMapper updateProfileMapper;
 
     /**
-     * Retrieves the profile details of the currently authenticated user.
+     * Retrieves the profile details for the currently authenticated user.
      *
-     * @return ProfileResponseDto with the current user's profile details.
-     * @throws UserNotFoundException if no authenticated user is found in the
-     *                               security context.
+     * @return A {@link ProfileResponseDto} containing the user's profile
+     *         information.
+     * @see com.online_store.backend.api.profile.controller.ProfileController#getProfileDetails()
      */
     public ProfileResponseDto getProfileDetails() {
         User currentUser = commonUtilsService.getCurrentUser();
         Profile profile = profileRepository.findByUser(currentUser);
-
-        ProfileResponseDto profileResponse = profileUtilsService.profileResponseMapper(profile);
-
-        return profileResponse;
+        return getProfileMapper.profileMapper(profile);
     }
 
     /**
-     * Updates the profile details of the currently authenticated user.
-     * Includes handling for avatar (image) file upload or update.
+     * Updates the profile details for the current user.
+     * This method handles updating the user's personal information and,
+     * if provided, their profile avatar.
      *
-     * @param profileRequestDto DTO containing the updated profile details.
-     * @param file              Optional MultipartFile for the new avatar image. Can
-     *                          be null or empty.
-     * @return ProfileResponseDto with the updated profile details.
-     * 
+     * @param dto  The DTO containing the updated profile details.
+     * @param file The new avatar image file, which can be null.
+     * @return A success message upon a successful profile update.
+     * @see com.online_store.backend.api.profile.controller.ProfileController#updateProfileDetails(ProfileRequestDto,
+     *      MultipartFile)
      */
     @Transactional
-    public String updateProfileDetails(ProfileRequestDto profileRequestDto, MultipartFile file) {
-
+    public String updateProfileDetails(ProfileRequestDto dto, MultipartFile file) {
         User currentUser = commonUtilsService.getCurrentUser();
         Profile profile = profileRepository.findByUser(currentUser);
 
-        if (file != null && !file.isEmpty()) {
-            commonUtilsService.checkImageFileType(file);
-
-            if (profile.getAvatar() != null) {
-                uploadService.updateExistingUploadContent(profile.getAvatar(), file);
-            } else {
-                Upload newAvatar = uploadService.createFile(file);
-                profile.setAvatar(newAvatar);
-            }
-        }
-        profileUtilsService.updateProfileFromDto(profile, profileRequestDto);
+        profileUtilsService.updateAvatarIfPresent(profile, file);
+        updateProfileMapper.profileMapper(profile, dto);
         profileRepository.save(profile);
 
         log.info("Profile saved successfully for user: {}", currentUser.getEmail());
@@ -77,4 +76,22 @@ public class ProfileService {
         return "Profile updated successfully for user.";
     }
 
+    /**
+     * Creates a default profile for a new user based on their role.
+     * Currently, it creates a profile for a customer with a default gender.
+     *
+     * @param role The role of the new user.
+     * @return A new {@link Profile} entity with default values, or null if the role
+     *         is not supported.
+     * @see com.online_store.backend.api.user.utils.mapper.CreateUserMapper#userMapper(com.online_store.backend.api.auth.dto.request.AuthRequestDto,
+     *      Role)
+     */
+    public Profile createProfile(Role role) {
+        if (role == Role.CUSTOMER) {
+            return Profile.builder()
+                    .gender(Gender.PREFER_NOT_TO_SAY)
+                    .build();
+        }
+        return null;
+    }
 }

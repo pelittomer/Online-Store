@@ -41,7 +41,7 @@ public class Payment {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false, unique = true)
+    @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
@@ -52,7 +52,8 @@ public class Payment {
     private BigDecimal amount;
 
     @Column(nullable = false, length = 3)
-    private String currency;
+    @Builder.Default
+    private String currency="TL";
 
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
