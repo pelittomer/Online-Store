@@ -15,6 +15,8 @@ import com.online_store.backend.api.category.utils.CategoryUtilsService;
 import com.online_store.backend.api.category.utils.mapper.CreateCategoryMapper;
 import com.online_store.backend.api.category.utils.mapper.GetCategoryMapper;
 import com.online_store.backend.api.upload.entities.Upload;
+import com.online_store.backend.api.upload.service.UploadService;
+import com.online_store.backend.common.utils.CommonUtilsService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +35,12 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     // utils
     private final CategoryUtilsService categoryUtilsService;
+    private final CommonUtilsService commonUtilsService;
     // mappers
     private final GetCategoryMapper getCategoryMapper;
     private final CreateCategoryMapper createCategoryMapper;
+    // services
+    private final UploadService uploadService;
 
     /**
      * Adds a new category to the system.
@@ -52,12 +57,12 @@ public class CategoryService {
      */
     @Transactional
     public String addCategory(CategoryRequestDto dto, MultipartFile imageFile, MultipartFile iconFile) {
-        Upload imageUpload = categoryUtilsService.handleFileUpload(imageFile);
-        Upload iconUpload = categoryUtilsService.handleFileUpload(iconFile);
+        Upload imageUpload = handleFileUpload(imageFile);
+        Upload iconUpload = handleFileUpload(iconFile);
 
         Category newCategory = createCategoryMapper.categoryMapper(dto, imageUpload, iconUpload);
 
-        categoryUtilsService.configureCategoryHierarchy(newCategory, dto.getParent());
+        configureCategoryHierarchy(newCategory, dto.getParent());
 
         categoryRepository.save(newCategory);
 
@@ -106,5 +111,80 @@ public class CategoryService {
         return categoryRepository.findAll().stream()
                 .map(getCategoryMapper::mapCategoryToResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Configures the category hierarchy based on the parent ID.
+     * This method uses the MPTT model to set the left and right values of the new
+     * category.
+     *
+     * @param newCategory The new category entity to be configured.
+     * @param parentId    The ID of the parent category, or {@code null} if it's a
+     *                    root category.
+     * @see com.online_store.backend.api.category.service.CategoryService#addCategory(com.online_store.backend.api.category.dto.request.CategoryRequestDto,
+     *      MultipartFile, MultipartFile)
+     */
+    private void configureCategoryHierarchy(Category newCategory, Long parentId) {
+        if (parentId == null) {
+            handleRootCategory(newCategory);
+        } else {
+            handleChildCategory(newCategory, parentId);
+        }
+    }
+
+    /**
+     * Handles the logic for creating a new root category.
+     * This method finds the maximum right value and assigns the left and right
+     * values
+     * to the new root category accordingly.
+     *
+     * @param newCategory The new root category to be handled.
+     * @see com.online_store.backend.api.category.utils.CategoryUtilsService#configureCategoryHierarchy(Category,
+     *      Long)
+     */
+    private void handleRootCategory(Category newCategory) {
+        Long maxRight = categoryRepository.findMaxRightValue();
+        int newLeft = (maxRight == null) ? 1 : maxRight.intValue() + 1;
+        newCategory.setLeftValue(newLeft);
+        newCategory.setRightValue(newLeft + 1);
+        log.info("Setting '{}' as a new root category.", newCategory.getName());
+    }
+
+    /**
+     * Handles the logic for creating a new child category.
+     * This method shifts the left and right values of other categories to
+     * accommodate the new child,
+     * and sets the parent relationship.
+     *
+     * @param newCategory The new child category to be handled.
+     * @param parentId    The ID of the parent category.
+     * @see com.online_store.backend.api.category.utils.CategoryUtilsService#configureCategoryHierarchy(Category,
+     *      Long)
+     */
+    private void handleChildCategory(Category newCategory, Long parentId) {
+        Category parentCategory = categoryUtilsService.findCategoryById(parentId);
+
+        categoryRepository.incrementRightValuesGreaterThanOrEqualTo(parentCategory.getRightValue(), 2);
+        categoryRepository.incrementLeftValuesGreaterThan(parentCategory.getRightValue(), 2);
+
+        newCategory.setLeftValue(parentCategory.getRightValue());
+        newCategory.setRightValue(parentCategory.getRightValue() + 1);
+        newCategory.setParent(parentCategory);
+        log.info("Setting '{}' as a child of category '{}'.", newCategory.getName(), parentCategory.getName());
+    }
+
+    /**
+     * Handles the upload of an image file for a category.
+     * It checks the file type and saves the file, returning the corresponding
+     * {@link Upload} entity.
+     *
+     * @param file The image file to be uploaded.
+     * @return The created {@link Upload} entity.
+     * @see com.online_store.backend.api.category.service.CategoryService#addCategory(com.online_store.backend.api.category.dto.request.CategoryRequestDto,
+     *      MultipartFile, MultipartFile)
+     */
+    private Upload handleFileUpload(MultipartFile file) {
+        commonUtilsService.checkImageFileType(file);
+        return uploadService.createFile(file);
     }
 }
