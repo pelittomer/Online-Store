@@ -14,7 +14,7 @@ import com.online_store.backend.api.address.entities.Address;
 import com.online_store.backend.api.address.repository.AddressRepository;
 import com.online_store.backend.api.address.utils.AddressUtilsService;
 import com.online_store.backend.api.address.utils.mapper.CreateAddressMapper;
-import com.online_store.backend.api.address.utils.mapper.GeAddressMapper;
+import com.online_store.backend.api.address.utils.mapper.GetAddressMapper;
 import com.online_store.backend.api.user.entities.User;
 import com.online_store.backend.common.utils.CommonUtilsService;
 
@@ -35,7 +35,7 @@ public class AddressService {
     private final CommonUtilsService commonUtilsService;
     private final AddressUtilsService addressUtilsService;
     // mappers
-    private final GeAddressMapper getAddressMapper;
+    private final GetAddressMapper getAddressMapper;
     private final CreateAddressMapper createAddressMapper;
 
     /**

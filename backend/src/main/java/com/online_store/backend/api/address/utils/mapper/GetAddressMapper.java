@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class GeAddressMapper {
+public class GetAddressMapper {
 
     public AddressResponseDto addressMapper(Address dto) {
         return AddressResponseDto.builder()
