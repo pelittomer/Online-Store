@@ -9,9 +9,10 @@ import com.online_store.backend.api.profile.dto.response.ProfileResponseDto;
 import com.online_store.backend.api.profile.entities.Gender;
 import com.online_store.backend.api.profile.entities.Profile;
 import com.online_store.backend.api.profile.repository.ProfileRepository;
-import com.online_store.backend.api.profile.utils.ProfileUtilsService;
 import com.online_store.backend.api.profile.utils.mapper.GetProfileMapper;
 import com.online_store.backend.api.profile.utils.mapper.UpdateProfileMapper;
+import com.online_store.backend.api.upload.entities.Upload;
+import com.online_store.backend.api.upload.service.UploadService;
 import com.online_store.backend.api.user.entities.Role;
 import com.online_store.backend.api.user.entities.User;
 import com.online_store.backend.common.utils.CommonUtilsService;
@@ -31,12 +32,13 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfileService {
     // utils
     private final CommonUtilsService commonUtilsService;
-    private final ProfileUtilsService profileUtilsService;
     // repositories
     private final ProfileRepository profileRepository;
     // mappers
     private final GetProfileMapper getProfileMapper;
     private final UpdateProfileMapper updateProfileMapper;
+    // services
+    private final UploadService uploadService;
 
     /**
      * Retrieves the profile details for the currently authenticated user.
@@ -67,7 +69,7 @@ public class ProfileService {
         User currentUser = commonUtilsService.getCurrentUser();
         Profile profile = profileRepository.findByUser(currentUser);
 
-        profileUtilsService.updateAvatarIfPresent(profile, file);
+        updateAvatarIfPresent(profile, file);
         updateProfileMapper.profileMapper(profile, dto);
         profileRepository.save(profile);
 
@@ -93,5 +95,30 @@ public class ProfileService {
                     .build();
         }
         return null;
+    }
+
+    /**
+     * Updates the user's profile avatar if a new file is provided.
+     * This method first validates the file type. If the user already has an avatar,
+     * it updates the existing upload. If not, it creates a new upload and sets it
+     * as the new avatar.
+     *
+     * @param profile The {@link Profile} entity of the user.
+     * @param file    The new avatar file, which can be {@code null} or empty if no
+     *                update is needed.
+     * @see com.online_store.backend.api.profile.service.ProfileService#updateProfileDetails(com.online_store.backend.api.profile.dto.request.ProfileRequestDto,
+     *      MultipartFile)
+     */
+    private void updateAvatarIfPresent(Profile profile, MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            commonUtilsService.checkImageFileType(file);
+
+            if (profile.getAvatar() != null) {
+                uploadService.updateExistingUploadContent(profile.getAvatar(), file);
+            } else {
+                Upload newAvatar = uploadService.createFile(file);
+                profile.setAvatar(newAvatar);
+            }
+        }
     }
 }
