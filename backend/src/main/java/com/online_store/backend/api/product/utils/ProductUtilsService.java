@@ -1,13 +1,8 @@
 package com.online_store.backend.api.product.utils;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.online_store.backend.api.product.entities.Product;
 import com.online_store.backend.api.product.repository.ProductRepository;
@@ -27,39 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductUtilsService {
         // repositories
         private final ProductRepository productRepository;
-
-        /**
-         * Processes dynamic multipart files from a request.
-         * It iterates through all file names in the request and collects the
-         * corresponding
-         * non-empty files into a map.
-         *
-         * @param request The {@link MultipartHttpServletRequest} containing the files.
-         * @return A map where the key is the file name and the value is a list of
-         *         {@link MultipartFile}s.
-         * @see com.online_store.backend.api.product.service.ProductService#addProduct(com.online_store.backend.api.product.dto.request.ProductRequestDto,
-         *      MultipartHttpServletRequest)
-         */
-        public Map<String, List<MultipartFile>> processDynamicFiles(MultipartHttpServletRequest request) {
-                Map<String, List<MultipartFile>> dynamicFiles = new HashMap<>();
-                Iterator<String> fileNames = request.getFileNames();
-
-                while (fileNames.hasNext()) {
-                        String fileName = fileNames.next();
-                        List<MultipartFile> filesForThisKey = request.getFiles(fileName);
-
-                        if (filesForThisKey != null && !filesForThisKey.isEmpty()) {
-                                List<MultipartFile> actualFiles = filesForThisKey.stream()
-                                                .filter(f -> !f.isEmpty())
-                                                .toList();
-
-                                if (!actualFiles.isEmpty()) {
-                                        dynamicFiles.put(fileName, actualFiles);
-                                }
-                        }
-                }
-                return dynamicFiles;
-        }
 
         /**
          * Finds a product by its unique identifier.
