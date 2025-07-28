@@ -77,7 +77,7 @@ public class UserService {
      * @see com.online_store.backend.api.user.service.UserService#createUser(com.online_store.backend.api.auth.dto.request.AuthRequestDto,
      *      com.online_store.backend.api.user.entities.Role)
      */
-    public void handleExistingUser(String email) {
+    private void handleExistingUser(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
             log.warn("Registration attempt for existing email: {}", email);
             throw new UserAlreadyExistsException("User with email " + email + " already exists.");
