@@ -1,6 +1,8 @@
 package com.online_store.backend.api.category.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -9,11 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.online_store.backend.api.category.dto.request.CategoryRequestDto;
 import com.online_store.backend.api.category.dto.response.CategoryResponseDto;
+import com.online_store.backend.api.category.dto.response.CategoryTreeDto;
 import com.online_store.backend.api.category.entities.Category;
 import com.online_store.backend.api.category.repository.CategoryRepository;
 import com.online_store.backend.api.category.utils.CategoryUtilsService;
 import com.online_store.backend.api.category.utils.mapper.CreateCategoryMapper;
 import com.online_store.backend.api.category.utils.mapper.GetCategoryMapper;
+import com.online_store.backend.api.category.utils.mapper.GetCategoryTreeMapper;
 import com.online_store.backend.api.upload.entities.Upload;
 import com.online_store.backend.api.upload.service.UploadService;
 import com.online_store.backend.common.utils.CommonUtilsService;
@@ -39,6 +43,7 @@ public class CategoryService {
     // mappers
     private final GetCategoryMapper getCategoryMapper;
     private final CreateCategoryMapper createCategoryMapper;
+    private final GetCategoryTreeMapper getCategoryTreeMapper;
     // services
     private final UploadService uploadService;
 
@@ -107,10 +112,32 @@ public class CategoryService {
      * @see com.online_store.backend.api.category.controller.CategoryController#getCategoryTree()
      */
     @Transactional(readOnly = true)
-    public List<CategoryResponseDto> getCategoryTree() {
-        return categoryRepository.findAll().stream()
-                .map(getCategoryMapper::mapCategoryToResponseDto)
-                .collect(Collectors.toList());
+    public List<CategoryTreeDto> getCategoryTree() {
+        List<Category> allCategories = categoryRepository.findAll();
+
+        Map<Long, CategoryTreeDto> categoryDTOMap = allCategories.stream()
+                .map(getCategoryTreeMapper::categoryMapper)
+                .collect(Collectors.toMap(CategoryTreeDto::getId, dto -> dto));
+
+        List<CategoryTreeDto> rootCategories = new ArrayList<>();
+
+        allCategories.forEach(category -> {
+            CategoryTreeDto currentCategoryDto = categoryDTOMap.get(category.getId());
+
+            if (category.getParent() != null) {
+                CategoryTreeDto parentDTO = categoryDTOMap.get(category.getParent().getId());
+                if (parentDTO != null) {
+                    if (parentDTO.getChildren() == null) {
+                        parentDTO.setChildren(new ArrayList<>());
+                    }
+                    parentDTO.getChildren().add(currentCategoryDto);
+                }
+            } else {
+                rootCategories.add(currentCategoryDto);
+            }
+        });
+
+        return rootCategories;
     }
 
     /**
