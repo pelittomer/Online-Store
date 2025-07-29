@@ -3,7 +3,6 @@ package com.online_store.backend.api.variation.utils;
 import org.springframework.stereotype.Component;
 
 import com.online_store.backend.api.category.entities.Category;
-import com.online_store.backend.api.category.utils.CategoryUtilsService;
 import com.online_store.backend.api.variation.entities.Variation;
 import com.online_store.backend.api.variation.entities.VariationOption;
 import com.online_store.backend.api.variation.repository.VariationOptionRepository;
@@ -23,25 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class VariationUtilsService {
-    // services
-    private final CategoryUtilsService categoryUtilsService;
     // repositories
     private final VariationOptionRepository variationOptionRepository;
     private final VariationRepository variationRepository;
-
-    /**
-     * Retrieves a category by its ID.
-     *
-     * @param categoryId The ID of the category. Can be null.
-     * @return The {@link Category} entity, or null if the ID is null.
-     * @throws EntityNotFoundException if the category with the given ID is not
-     *                                 found.
-     * @see com.online_store.backend.api.variation.service.VariationService#addVariation(com.online_store.backend.api.variation.dto.request.VariationRequestDto)
-     * @see com.online_store.backend.api.variation.service.VariationService#listVariations(java.util.Optional)
-     */
-    public Category getCategoryById(Long categoryId) {
-        return (categoryId != null) ? categoryUtilsService.findCategoryById(categoryId) : null;
-    }
 
     /**
      * Finds a variation option by its unique identifier.
