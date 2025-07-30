@@ -18,7 +18,6 @@ public class ProductResponseDto {
     private Long id;
     private String name;
     private BigDecimal price;
-    private Boolean isPublished;
     @Builder.Default
     List<Long> images = new ArrayList<>();
     private String brand;
