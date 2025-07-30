@@ -28,6 +28,7 @@ import com.online_store.backend.api.product.entities.embeddables.StockVariation;
 import com.online_store.backend.api.shipper.utils.mapper.GetShipperMapper;
 import com.online_store.backend.api.variation.entities.Variation;
 import com.online_store.backend.api.variation.entities.VariationOption;
+import com.online_store.backend.api.variation.utils.mapper.GetVariationMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +39,7 @@ public class GetProductDetailsMapper {
         private final GetShipperMapper getShipperMapper;
         private final GetCategoryMapper getCategoryMapper;
         private final GetCompanyMapper getCompanyMapper;
+        private final GetVariationMapper getVariationMapper;
 
         public ProductDetailsResponseDto productDetailResponseMapper(Product dto) {
                 DiscountDto discount = null;
@@ -150,8 +152,9 @@ public class GetProductDetailsMapper {
 
         public StockVariationResponseDto stockVariationMapper(StockVariation dto) {
                 return StockVariationResponseDto.builder()
+                                .id(dto.getVariation().getId())
                                 .variation(dto.getVariation().getName())
-                                .variationOption(dto.getVariationOption().getName())
+                                .variationOption(getVariationMapper.variationOptionMapper(dto.getVariationOption()))
                                 .build();
         }
 }

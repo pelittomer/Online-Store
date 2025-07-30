@@ -24,9 +24,9 @@ public class ProductStockRequestDto {
     @Min(value = 0, message = "Stock quantity cannot be negative.")
     private Integer stockQuantity;
 
-    @NotNull(message = "Additional price cannot be null.")
     @DecimalMin(value = "0.0", message = "Additional price cannot be negative.")
-    private BigDecimal additionalPrice;
+    @Builder.Default
+    private BigDecimal additionalPrice = BigDecimal.ZERO;
 
     @NotNull(message = "isLimited status cannot be null.")
     private Boolean isLimited;

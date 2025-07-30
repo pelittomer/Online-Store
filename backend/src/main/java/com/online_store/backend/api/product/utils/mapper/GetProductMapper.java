@@ -22,7 +22,6 @@ public class GetProductMapper {
                 .price(dto.getPrice())
                 .images(images)
                 .brand(dto.getBrand().getName())
-                .isPublished(dto.getIsPublished())
                 .company(dto.getCompany().getName())
                 .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())
