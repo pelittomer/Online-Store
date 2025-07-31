@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.online_store.backend.api.category.dto.request.CategoryRequestDto;
 import com.online_store.backend.api.category.dto.response.CategoryResponseDto;
+import com.online_store.backend.api.category.dto.response.CategoryTreeDto;
 import com.online_store.backend.api.category.service.CategoryService;
 import com.online_store.backend.common.exception.ApiResponse;
 
@@ -85,7 +86,7 @@ public class CategoryController {
      *         list of all {@link CategoryResponseDto}.
      */
     @GetMapping("/tree")
-    public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> getCategoryTree() {
+    public ResponseEntity<ApiResponse<List<CategoryTreeDto>>> getCategoryTree() {
         return ResponseEntity.ok(
                 ApiResponse.success("",
                         categoryService.getCategoryTree()));

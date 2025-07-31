@@ -3,17 +3,16 @@ package com.online_store.backend.api.variation.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.online_store.backend.api.category.entities.Category;
+import com.online_store.backend.api.category.utils.CategoryUtilsService;
 import com.online_store.backend.api.variation.dto.request.VariationRequestDto;
 import com.online_store.backend.api.variation.dto.response.VariationResponseDto;
 import com.online_store.backend.api.variation.entities.Variation;
 import com.online_store.backend.api.variation.repository.VariationRepository;
-import com.online_store.backend.api.variation.utils.VariationUtilsService;
 import com.online_store.backend.api.variation.utils.mapper.CreateVariationMapper;
 import com.online_store.backend.api.variation.utils.mapper.GetVariationMapper;
 
@@ -33,7 +32,7 @@ public class VariationService {
     // repositories
     private final VariationRepository variationRepository;
     // utils
-    private final VariationUtilsService variationUtilsService;
+    private final CategoryUtilsService categoryUtilsService;
     // mappers
     private final CreateVariationMapper createVariationMapper;
     private final GetVariationMapper getVariationMapper;
@@ -51,7 +50,7 @@ public class VariationService {
     @Transactional
     public String addVariation(VariationRequestDto dto) {
         log.info("Adding new variation with name: '{}'", dto.getName());
-        Category category = variationUtilsService.getCategoryById(dto.getCategory());
+        Category category = categoryUtilsService.findCategoryById(dto.getCategory());
         Variation variation = createVariationMapper.variationMapper(dto, category);
         variationRepository.save(variation);
 
@@ -72,20 +71,12 @@ public class VariationService {
      * @see com.online_store.backend.api.variation.controller.VariationController#listVariations(Optional)
      */
     @Transactional(readOnly = true)
-    public List<VariationResponseDto> listVariations(Optional<Long> categoryId) {
-        log.info("Listing variations. Category ID is present: {}", categoryId.isPresent());
+    public List<VariationResponseDto> listVariations(Long categoryId) {
+        log.info("Listing variations. Category ID is present: {}", categoryId);
 
-        Stream<Variation> variationsStream = variationRepository.findByCategoryIsNull().stream();
+        Category category = categoryUtilsService.findCategoryById(categoryId);
 
-        if (categoryId.isPresent()) {
-            Category categoryOptional = variationUtilsService.getCategoryById(categoryId.get());
-            if (categoryOptional != null) {
-                variationsStream = Stream.concat(
-                        variationsStream,
-                        variationRepository.findByCategory(categoryOptional).stream());
-            }
-        }
-        return variationsStream
+        return variationRepository.findByCategory(category).stream()
                 .map(getVariationMapper::variationMapper)
                 .collect(Collectors.toList());
     }

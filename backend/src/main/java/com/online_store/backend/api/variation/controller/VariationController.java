@@ -1,7 +1,6 @@
 package com.online_store.backend.api.variation.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,7 +60,7 @@ public class VariationController {
          */
         @GetMapping()
         public ResponseEntity<ApiResponse<List<VariationResponseDto>>> listVariations(
-                        @RequestParam Optional<Long> categoryId) {
+                        @RequestParam Long categoryId) {
                 return ResponseEntity.ok(
                                 ApiResponse.success("",
                                                 variationService.listVariations(categoryId)));
