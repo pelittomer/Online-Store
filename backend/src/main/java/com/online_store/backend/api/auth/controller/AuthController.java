@@ -44,7 +44,8 @@ public class AuthController {
             @Valid @RequestBody AuthRequestDto authRequestDto,
             @PathVariable Role role) {
         return ResponseEntity.ok(
-                ApiResponse.success(authService.register(authRequestDto, role)));
+                ApiResponse.success("",
+                        authService.register(authRequestDto, role)));
     }
 
     /**
@@ -65,7 +66,7 @@ public class AuthController {
             @Valid @RequestBody AuthRequestDto authRequestDto,
             @PathVariable Role role,
             HttpServletResponse response) {
-        return ResponseEntity.ok(ApiResponse.success(
+        return ResponseEntity.ok(ApiResponse.success("",
                 authService.login(authRequestDto, role, response)));
     }
 
@@ -81,7 +82,8 @@ public class AuthController {
     @PostMapping("/sign-out")
     public ResponseEntity<ApiResponse<String>> signOut(HttpServletResponse response) {
         return ResponseEntity.ok(
-                ApiResponse.success(authService.logout(response)));
+                ApiResponse.success("",
+                        authService.logout(response)));
     }
 
     /**

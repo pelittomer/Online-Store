@@ -3,7 +3,7 @@ package com.online_store.backend.api.order.utils.mapper;
 import org.springframework.stereotype.Component;
 
 import com.online_store.backend.api.address.dto.response.AddressResponseDto;
-import com.online_store.backend.api.address.utils.mapper.GeAddressMapper;
+import com.online_store.backend.api.address.utils.mapper.GetAddressMapper;
 import com.online_store.backend.api.order.dto.response.OrderResponseDto;
 import com.online_store.backend.api.order.entities.Order;
 import com.online_store.backend.api.order.entities.OrderStatus;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GetOrderMapper {
     //mappers
-    private final GeAddressMapper getAddressMapper;
+    private final GetAddressMapper getAddressMapper;
 
     public OrderResponseDto orderResponseMapper(Order dto) {
         AddressResponseDto address = getAddressMapper.addressMapper(dto.getAddress());
