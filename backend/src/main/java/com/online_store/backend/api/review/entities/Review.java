@@ -1,7 +1,10 @@
 package com.online_store.backend.api.review.entities;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.online_store.backend.api.product.entities.Product;
 import com.online_store.backend.api.upload.entities.Upload;
@@ -60,4 +63,8 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

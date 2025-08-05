@@ -1,5 +1,6 @@
 package com.online_store.backend.api.review.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,4 +21,5 @@ public class ReviewResponseDto {
     @Builder.Default
     private List<Long> images = new ArrayList<>();
     private Long product;
+    private LocalDateTime createdAt;
 }
