@@ -23,6 +23,7 @@ public class GetReviewMapper {
                 .isPurchased(dto.getIsPurchased())
                 .images(images)
                 .product(dto.getProduct().getId())
+                .createdAt(dto.getCreatedAt())
                 .build();
     }
 }
