@@ -25,6 +25,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled
+                    
                     dispatch(logout())
                     setTimeout(() => {
                         dispatch(apiSlice.util.resetApiState())
@@ -42,8 +43,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled
-                    const { accessToken } = data.data
-                    dispatch(setCredentials({ accessToken }))
+                    dispatch(setCredentials({ accessToken: data.data }))
                 } catch (error) {
                     console.log("refresh error : ", error)
                 }

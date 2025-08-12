@@ -8,19 +8,17 @@ const baseQuery = fetchBaseQuery({
         const token = getState().auth.token
 
         if (token) {
-            headers.set("authorization", `Bearer ${token}`)
+            headers.set("Authorization", `Bearer ${token}`)
         }
         return headers
     }
 })
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
-
     let result = await baseQuery(args, api, extraOptions)
 
     if (result?.error?.status === 403) {
-
-        const refreshResult = await baseQuery('/auth/refresh', api, extraOptions)
+        const refreshResult = await baseQuery('/user/auth/refresh', api, extraOptions)
 
         if (refreshResult?.data) {
 
@@ -41,6 +39,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['User'],
+    tagTypes: ['User', 'Brand'],
     endpoints: builder => ({})
 })

@@ -27,12 +27,10 @@ function AuthForm({ role, method }: AuthFormProps) {
     const navigate = useNavigate()
 
     const currentRole = role === 'SELLER' ? 'SELLER' : 'CUSTOMER'
-
     const handleSignIn = async (payload: LoginFormValues) => {
         try {
             const { data } = await login({ payload, role: currentRole }).unwrap()
-            const { accessToken } = data
-            dispatch(setCredentials({ accessToken }))
+            dispatch(setCredentials({ accessToken: data }))
             if (!isSubmitting) {
                 navigate('/')
             }
@@ -44,7 +42,7 @@ function AuthForm({ role, method }: AuthFormProps) {
     const handleSignUp = async (payload: RegisterFormValues) => {
         try {
             await register({ payload, role: currentRole }).unwrap()
-            handleSignIn(payload)
+            if (!isSubmitting) handleSignIn(payload)
         } catch (error: any) {
             setErrorMessage(error?.data?.message || 'Failed to sign up. Please try again.')
         }
