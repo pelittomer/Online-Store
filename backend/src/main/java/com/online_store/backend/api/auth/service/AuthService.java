@@ -133,14 +133,14 @@ public class AuthService {
      */
     public void refreshToken(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-        final String authHeader = request.getHeader("Authorization");
+        String refreshToken = extractRefreshTokenFromCookie(request);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.warn("Refresh token request without valid Authorization header.");
+        if (refreshToken == null) {
+            log.warn("Refresh token request without valid cookie.");
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Refresh token not found.");
+
             return;
         }
-
-        final String refreshToken = authHeader.substring(7);
 
         try {
             handleTokenRefresh(refreshToken, response);
@@ -149,6 +149,23 @@ public class AuthService {
         } catch (Exception e) {
             handleUnexpectedError(response, e);
         }
+    }
+
+    /**
+     * Extracts the refresh token from the "jwt" cookie.
+     *
+     * @param request The {@link HttpServletRequest} to retrieve the cookie from.
+     * @return The refresh token string, or null if not found.
+     */
+    private String extractRefreshTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -321,5 +338,21 @@ public class AuthService {
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         objectMapper.writeValue(response.getOutputStream(),
                 ErrorResponse.builder().message("An unexpected error occurred: " + e.getMessage()).build());
+    }
+
+    /**
+     * Sends a standardized error response.
+     *
+     * @param response The {@link HttpServletResponse} to write the error to.
+     * @param status   The HTTP status to set.
+     * @param message  The error message to include in the response.
+     * @throws IOException if an error occurs during writing the response.
+     */
+    private void sendErrorResponse(HttpServletResponse response,
+            HttpStatus status, String message) throws IOException {
+        response.setContentType("application/json");
+        response.setStatus(status.value());
+        objectMapper.writeValue(response.getOutputStream(),
+                ErrorResponse.builder().message(message).build());
     }
 }
